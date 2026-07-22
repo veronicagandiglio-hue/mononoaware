@@ -1,0 +1,881 @@
+---
+// src/pages/autori.astro
+import { getCollection } from 'astro:content';
+
+const tuttiRacconti = await getCollection('racconti', ({ data }) => !data.isDraft);
+
+// FIX #5 — leggi anche la collection autori per includere autori senza racconti
+const autoriCollection = await getCollection('autori', ({ data }) => !data.isDraft);
+
+
+
+// ─── HELPERS ────────────────────────────────────────────────────────────────
+function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+// ─── METADATI STATICI AUTORI ──────────────────────────────────────────────
+const AUTHOR_META: Record<string, { kanji: string; anni: string; temi: string; foto: string }> = {
+  'Osamu Dazai':           { kanji: '太宰治',       anni: '1909–1948', temi: 'alienazione · ironia tragica · autodistruzione',  foto: '' },
+  'Ryūnosuke Akutagawa':   { kanji: '芥川龍之介',   anni: '1892–1927', temi: 'folklore · psicologia · ambiguità morale',         foto: '' },
+  'Yasunari Kawabata':     { kanji: '川端康成',     anni: '1899–1972', temi: 'malinconia · bellezza transitoria · solitudine',   foto: '' },
+  "Jun'ichirō Tanizaki":   { kanji: '谷崎潤一郎',   anni: '1886–1965', temi: 'ossessione · estetica · sensualità oscura',        foto: '' },
+  'Natsume Soseki':        { kanji: '夏目漱石',     anni: '1867–1916', temi: 'identità · modernità · isolamento interiore',      foto: '' },
+  'Lafcadio Hearn':        { kanji: '小泉八雲',     anni: '1850–1904', temi: 'fantasmi · folklore · meraviglia notturna',        foto: '' },
+  'Edogawa Ranpo':         { kanji: '江戸川乱歩',   anni: '1894–1965', temi: 'giallo · ossessione · grotesco',                   foto: '' },
+  'Yukio Mishima':         { kanji: '三島由紀夫',   anni: '1925–1970', temi: 'bellezza · morte · tradizione infranta',           foto: '' },
+  'Izumi Kyoka':           { kanji: '泉鏡花',       anni: '1873–1939', temi: 'soprannaturale · romanticismo · eros',             foto: '' },
+  'Doppo Kunikida':        { kanji: '国木田独歩',   anni: '1871–1908', temi: 'naturalismo · solitudine · natura aspra',          foto: '' },
+  'Toson Shimazaki':       { kanji: '島崎藤村',     anni: '1872–1943', temi: 'naturalismo · famiglia · transizione epocale',    foto: '' },
+  'Koyo Ozaki':            { kanji: '尾崎紅葉',     anni: '1867–1903', temi: "amore · melodramma · fine di un'epoca",            foto: '' },
+  'Saisei Muro':           { kanji: '室生犀星',     anni: '1889–1962', temi: 'lirismo · infanzia · malinconia',                  foto: '' },
+  'Kan Kikuchi':           { kanji: '菊池寛',       anni: '1888–1948', temi: 'dramma · ironia · società borghese',               foto: '' },
+  'Kafu Nagai':            { kanji: '永井荷風',     anni: '1879–1959', temi: 'nostalgia · erotismo · Tokyo perduta',             foto: '' },
+  'Mori Ogai':             { kanji: '森鷗外',       anni: '1862–1922', temi: 'dualismo · storia · dovere e libertà',             foto: '' },
+  'Ango Sakaguchi':        { kanji: '坂口安吾',     anni: '1906–1955', temi: 'decadenza · nichilismo · post-guerra',             foto: '' },
+  'Fumiko Hayashi':        { kanji: '林芙美子',     anni: '1903–1951', temi: 'vagabondaggio · femminile · povertà dignitosa',    foto: '' },
+  'Naoya Shiga':           { kanji: '志賀直哉',     anni: '1883–1971', temi: 'introspezione · natura · autobiografia',           foto: '' },
+  'Saneatsu Mushanokoji':  { kanji: '武者小路実篤',  anni: '1885–1976', temi: 'umanesimo · ideale · comunità',                   foto: '' },
+  'Riichi Yokomitsu':      { kanji: '横光利一',     anni: '1898–1947', temi: 'sensazionismo · modernismo · velocità',            foto: '' },
+  'Mokichi Saito':         { kanji: '斎藤茂吉',     anni: '1882–1953', temi: 'tanka · morte · amore filiale',                   foto: '' },
+  'Mimei Ogawa':           { kanji: '小川未明',     anni: '1882–1961', temi: 'fiabe · malinconia infantile · mare',              foto: '' },
+  'Kajii Motojirou':       { kanji: '梶井基次郎',   anni: '1901–1932', temi: 'malattia · luce · frammento lirico',               foto: '' },
+  'Fumiko Enchi':          { kanji: '円地文子',     anni: '1905–1986', temi: 'femminile · vendetta · eros represso',             foto: '' },
+  'Aya Koda':              { kanji: '幸田文',       anni: '1904–1990', temi: 'natura · famiglia · raffinatezza',                 foto: '' },
+};
+
+const CAT_TEMI: Record<string, string> = {
+  'Folklore e Fantasmi':   'folklore · spiriti · meraviglia oscura',
+  "Romanzo dell'Io":       'confessione · abisso interiore · malinconia',
+  'Modernismo':            'città · deriva · identità in frantumi',
+  'Naturalismo':           'fame · terra arida · silenzi pesanti',
+  'Ero-Guro e Giallo':     'ossessione · ombra · desiderio estremo',
+  'Satira e Critica Sociale': 'ironia feroce · potere ridicolo · riso amaro',
+};
+
+// ─── AGGREGAZIONE AUTORI ──────────────────────────────────────────────────
+interface AutoreEntry {
+  nome: string;
+  slug: string;
+  numRacconti: number;
+  categoriaPrevalente: string;
+  kanji: string;
+  anni: string;
+  temi: string;
+  foto: string;
+}
+
+const autoreMap = new Map<string, { racconti: typeof tuttiRacconti; cats: Record<string, number> }>();
+
+// Prima aggiungi tutti gli autori dai racconti
+for (const r of tuttiRacconti) {
+  const nome = r.data.author?.trim();
+  if (!nome) continue;
+  if (!autoreMap.has(nome)) autoreMap.set(nome, { racconti: [], cats: {} });
+  const entry = autoreMap.get(nome)!;
+  entry.racconti.push(r);
+  const cat = r.data.category || '';
+  entry.cats[cat] = (entry.cats[cat] || 0) + 1;
+}
+
+// FIX #5 — poi aggiungi autori dalla collection che non hanno ancora racconti
+for (const a of autoriCollection) {
+  const nome = a.data.name?.trim();
+  if (!nome || autoreMap.has(nome)) continue;
+  autoreMap.set(nome, { racconti: [], cats: {} });
+}
+
+const autori: AutoreEntry[] = [...autoreMap.entries()]
+  .map(([nome, data]) => {
+    const catPrev = Object.entries(data.cats).sort((a, b) => b[1] - a[1])[0]?.[0] ?? '';
+
+    // Priorità: dati dalla collection autori, poi AUTHOR_META statico
+    const collEntry = autoriCollection.find(a => a.data.name === nome);
+    const meta = AUTHOR_META[nome];
+
+    return {
+      nome,
+      slug: slugify(nome),
+      numRacconti: data.racconti.length,
+      categoriaPrevalente: catPrev,
+      kanji: collEntry?.data.kanji ?? meta?.kanji ?? nome.slice(0, 2).toUpperCase(),
+      anni:  collEntry?.data.anni  ?? meta?.anni  ?? '—',
+      temi:  collEntry?.data.temi  ?? meta?.temi  ?? CAT_TEMI[catPrev] ?? 'letteratura · narrazione · memoria',
+      foto:  collEntry?.data.foto  ?? meta?.foto  ?? '',
+    };
+  })
+  .sort((a, b) => a.nome.localeCompare(b.nome, 'it'));
+
+// Raggruppa per prima lettera
+const perLettera = new Map<string, AutoreEntry[]>();
+for (const a of autori) {
+  const l = a.nome[0].toUpperCase();
+  if (!perLettera.has(l)) perLettera.set(l, []);
+  perLettera.get(l)!.push(a);
+}
+const letterePresenti = new Set([...perLettera.keys()]);
+const lettereOrdinate = [...perLettera.keys()].sort();
+const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+---
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Autori — 東の声</title>
+  <meta name="description" content="Le voci della narrativa giapponese classica. Un archivio di storie, silenzi e ombre." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Noto+Serif+JP:wght@200;300;400;700&family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:          #0d0c0a;
+      --paper:        #f5f0e8;
+      --paper-dark:   #ede7d9;
+      --red:          #b5271b;
+      --gold:         #c9a84c;
+      --mist:         #8a8278;
+      --mist-light:   #b8b2aa;
+      --border:       rgba(13,12,10,0.11);
+
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-serif:   'DM Serif Display', serif;
+      --font-body:    'EB Garamond', serif;
+      --font-jp:      'Noto Serif JP', serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.028;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ─── CURSOR ─────────────────────────────────────────────────── */
+    .cursor {
+      width: 8px; height: 8px;
+      background: var(--red);
+      border-radius: 50%;
+      position: fixed; pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      transition: transform 0.12s ease;
+    }
+    .cursor-ring {
+      width: 32px; height: 32px;
+      border: 1px solid rgba(181,39,27,0.38);
+      border-radius: 50%;
+      position: fixed; pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: border-color 0.3s;
+    }
+
+    /* ─── NAVIGAZIONE ────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 500;
+      padding: 1.2rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.4s, border-color 0.4s;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(245,240,232,0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom-color: var(--border);
+    }
+    .nav-logo {
+      font-family: var(--font-jp);
+      font-size: 1.2rem;
+      font-weight: 300;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: 0.12em;
+    }
+    .nav-links {
+      display: flex; gap: 2.5rem; list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.78rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      opacity: 0.55;
+      transition: opacity 0.22s;
+    }
+    .nav-links a:hover,
+    .nav-links a.active { opacity: 1; }
+
+    /* ─── HERO ───────────────────────────────────────────────────── */
+    .page-hero {
+      min-height: 62svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 9rem 2.5rem 5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg-kanji {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-jp);
+      font-size: clamp(14rem, 42vw, 34rem);
+      font-weight: 200;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(13,12,10,0.045);
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+      opacity: 0;
+      animation: slowReveal 1.8s ease forwards 0.2s;
+    }
+    @keyframes slowReveal { to { opacity: 1; } }
+
+    .hero-eyebrow {
+      font-size: 0.68rem;
+      letter-spacing: 0.52em;
+      text-transform: uppercase;
+      color: var(--mist);
+      margin-bottom: 1.6rem;
+      position: relative; z-index: 1;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.5s;
+    }
+    .page-hero h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(3.2rem, 8.5vw, 7.5rem);
+      font-weight: 400;
+      line-height: 0.93;
+      letter-spacing: -0.022em;
+      position: relative; z-index: 1;
+      opacity: 0;
+      animation: fadeUp 0.9s ease forwards 0.7s;
+    }
+    .page-hero h1 em { font-style: italic; color: var(--red); }
+
+    .hero-subtitle {
+      margin-top: 2rem;
+      font-style: italic;
+      color: var(--mist);
+      font-size: 1.1rem;
+      line-height: 1.72;
+      max-width: 46ch;
+      position: relative; z-index: 1;
+      opacity: 0;
+      animation: fadeUp 0.9s ease forwards 0.95s;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-rule {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--mist-light), transparent);
+      margin: 3.5rem auto 0;
+      position: relative; z-index: 1;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 1.15s;
+    }
+
+    /* ─── TICKER ─────────────────────────────────────────────────── */
+    .ticker-wrap {
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 0;
+      background: var(--ink);
+    }
+    .ticker-track {
+      display: flex; white-space: nowrap;
+      animation: ticker 40s linear infinite;
+    }
+    .ticker-item {
+      font-family: var(--font-jp);
+      font-size: 0.82rem;
+      font-weight: 200;
+      letter-spacing: 0.28em;
+      color: rgba(245,240,232,0.38);
+      padding: 0 3rem;
+      flex-shrink: 0;
+    }
+    .ticker-item.accent { color: var(--gold); }
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ─── BARRA ALFABETICA STICKY ────────────────────────────────── */
+    .alpha-bar {
+      position: sticky;
+      top: 57px;
+      z-index: 400;
+      background: rgba(245,240,232,0.97);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2.5rem;
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .alpha-bar::-webkit-scrollbar { display: none; }
+
+    .alpha-bar-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: var(--mist-light);
+      margin-right: 1.8rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+      padding: 1rem 0;
+    }
+    .alpha-letter {
+      display: inline-block;
+      padding: 1rem 0.52rem;
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      color: var(--mist-light);
+      text-decoration: none;
+      cursor: default;
+      transition: color 0.2s, transform 0.2s;
+      flex-shrink: 0;
+      line-height: 1;
+      user-select: none;
+    }
+    .alpha-letter.has-authors {
+      color: var(--ink);
+      cursor: pointer;
+    }
+    .alpha-letter.has-authors:hover {
+      color: var(--red);
+      transform: translateY(-1px);
+    }
+
+    /* ─── CONTENUTO PRINCIPALE ───────────────────────────────────── */
+    .autori-main {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 0 2.5rem 8rem;
+    }
+
+    /* ─── SEZIONE PER LETTERA ────────────────────────────────────── */
+    .lettera-section { padding-top: 5rem; }
+
+    .lettera-anchor {
+      display: block;
+      height: 1px;
+      margin-top: -1px;
+      visibility: hidden;
+      scroll-margin-top: 116px;
+    }
+    .lettera-header {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 3rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .lettera-glyph {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 6vw, 5rem);
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(13,12,10,0.18);
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .lettera-line {
+      flex: 1; height: 1px;
+      background: var(--border);
+    }
+    .lettera-count {
+      font-size: 0.62rem;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: var(--mist-light);
+      white-space: nowrap;
+    }
+
+    /* ─── GRIGLIA ────────────────────────────────────────────────── */
+    .autori-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    /* ─── CARD AUTORE ────────────────────────────────────────────── */
+    .autore-card {
+      position: relative;
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: var(--paper);
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(18px);
+      transition:
+        opacity   0.65s ease,
+        transform 0.65s cubic-bezier(0.16,1,0.3,1),
+        background 0.28s ease;
+    }
+    .autore-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .autore-card:hover {
+      background: var(--paper-dark);
+      transform: translateY(-3px);
+      z-index: 2;
+    }
+
+    .autore-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--red);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+    .autore-card:hover::before { transform: scaleX(1); }
+
+    /* Badge "senza racconti" */
+    .card-badge-draft {
+      position: absolute;
+      top: 0.7rem; right: 0.7rem;
+      font-size: 0.5rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--mist-light);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.5rem;
+      background: var(--paper);
+    }
+
+    .card-photo {
+      width: 100%;
+      height: 96px;
+      overflow: hidden;
+      display: block;
+    }
+    .card-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      filter: sepia(28%) contrast(0.92) brightness(0.97);
+      transition: filter 0.4s ease, transform 0.5s ease;
+    }
+    .autore-card:hover .card-photo img {
+      filter: sepia(10%) contrast(1) brightness(1);
+      transform: scale(1.03);
+    }
+
+    .card-body {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 148px;
+      padding: 1.6rem 1.6rem 1.4rem;
+    }
+
+    .card-kanji-bg {
+      position: absolute;
+      bottom: -0.15em;
+      right: -0.05em;
+      font-family: var(--font-jp);
+      font-size: clamp(4rem, 6.5vw, 6rem);
+      font-weight: 200;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(13,12,10,0.06);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+      transition: -webkit-text-stroke 0.35s ease, transform 0.45s ease;
+    }
+    .autore-card:hover .card-kanji-bg {
+      -webkit-text-stroke: 1px rgba(13,12,10,0.12);
+      transform: translateY(-4px) scale(1.04);
+    }
+
+    .card-nome {
+      font-family: var(--font-serif);
+      font-size: clamp(1.1rem, 1.7vw, 1.38rem);
+      font-weight: 400;
+      line-height: 1.18;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      transition: color 0.25s;
+      margin-bottom: 0.45rem;
+    }
+    .autore-card:hover .card-nome { color: var(--red); }
+
+    .card-anni {
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      color: var(--mist-light);
+      text-transform: uppercase;
+      margin-bottom: 0.7rem;
+    }
+
+    .card-count {
+      display: flex;
+      align-items: baseline;
+      gap: 0.35rem;
+      margin-bottom: auto;
+    }
+    .card-count-num {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      line-height: 1;
+      color: var(--ink);
+      opacity: 0.5;
+      transition: opacity 0.25s;
+    }
+    .autore-card:hover .card-count-num { opacity: 1; }
+    .card-count-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--mist-light);
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-top: 1.1rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border);
+      gap: 0.8rem;
+    }
+    .card-temi {
+      font-size: 0.63rem;
+      letter-spacing: 0.03em;
+      color: var(--mist-light);
+      font-style: italic;
+      line-height: 1.55;
+      flex: 1;
+    }
+    .card-arrow {
+      font-size: 0.9rem;
+      color: var(--mist-light);
+      opacity: 0;
+      transform: translateX(-6px);
+      transition: opacity 0.28s, transform 0.28s, color 0.22s;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .autore-card:hover .card-arrow {
+      opacity: 1;
+      transform: translateX(0);
+      color: var(--red);
+    }
+
+    /* ─── FOOTER PAGINA ──────────────────────────────────────────── */
+    footer {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 3.5rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-logo {
+      font-family: var(--font-jp);
+      font-size: 1.5rem;
+      font-weight: 200;
+      color: var(--paper);
+      text-decoration: none;
+      letter-spacing: 0.15em;
+    }
+    .footer-links-sm {
+      display: flex; gap: 2rem; list-style: none;
+    }
+    .footer-links-sm a {
+      font-size: 0.78rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.42);
+      text-decoration: none;
+      transition: color 0.22s;
+    }
+    .footer-links-sm a:hover { color: var(--paper); }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────────── */
+    @media (max-width: 1100px) {
+      .autori-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 760px) {
+      nav { padding: 1rem 1.2rem; }
+      .nav-links { display: none; }
+      .page-hero { padding: 7rem 1.5rem 3rem; min-height: 55svh; }
+      .page-hero h1 { font-size: clamp(2.6rem, 11vw, 4rem); }
+      .hero-subtitle { font-size: 1rem; }
+      .alpha-bar { padding: 0 1.2rem; }
+      .autori-main { padding: 0 1.2rem 5rem; }
+      .autori-grid { grid-template-columns: repeat(2, 1fr); }
+      .card-kanji-bg { font-size: 3.5rem; }
+      footer { flex-direction: column; gap: 2rem; text-align: center; }
+    }
+    @media (max-width: 480px) {
+      .autori-grid { grid-template-columns: 1fr; }
+      .card-body { min-height: auto; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <nav id="navbar">
+    <a href="/" class="nav-logo">東の声</a>
+    <ul class="nav-links">
+      <li><a href="/racconti">Racconti</a></li>
+      <li><a href="/categorie">Categorie</a></li>
+      <li><a href="/autori" class="active">Autori</a></li>
+      <li><a href="/traduttore">Chi traduce</a></li>
+    </ul>
+  </nav>
+
+  <section class="page-hero">
+    <div class="hero-bg-kanji">著者</div>
+    <p class="hero-eyebrow">Archivio degli autori</p>
+    <h1>Le <em>voci</em>,<br>i silenzi.</h1>
+    <p class="hero-subtitle">
+      Ogni nome nasconde un mondo — frammentato, oscuro, ironico o visionario.
+      Una biblioteca di voci che non smettono di parlare.
+    </p>
+    <div class="hero-rule"></div>
+  </section>
+
+  <div class="ticker-wrap" aria-hidden="true">
+    <div class="ticker-track">
+      {['太宰治', '◈', '芥川龍之介', '◈', '川端康成', '◈', '泉鏡花', '◈', '夏目漱石', '◈', '森鷗外', '◈', '谷崎潤一郎', '◈',
+        '太宰治', '◈', '芥川龍之介', '◈', '川端康成', '◈', '泉鏡花', '◈', '夏目漱石', '◈', '森鷗外', '◈', '谷崎潤一郎', '◈']
+        .map(t => (
+          <span class={`ticker-item${t === '◈' ? ' accent' : ''}`}>{t}</span>
+        ))}
+    </div>
+  </div>
+
+  <div class="alpha-bar" id="alpha-bar" role="navigation" aria-label="Naviga per lettera">
+    <span class="alpha-bar-label">Indice</span>
+    {alfabeto.map(l => {
+      const has = letterePresenti.has(l);
+      return has
+        ? <a href={`#lettera-${l}`} class="alpha-letter has-authors" aria-label={`Vai alla lettera ${l}`}>{l}</a>
+        : <span class="alpha-letter" aria-hidden="true">{l}</span>;
+    })}
+  </div>
+
+  <main class="autori-main">
+    {lettereOrdinate.map(lettera => {
+      const autoriLettera = perLettera.get(lettera) ?? [];
+      return (
+        <section class="lettera-section" id={`section-${lettera}`}>
+          <span class="lettera-anchor" id={`lettera-${lettera}`}></span>
+
+          <div class="lettera-header">
+            <span class="lettera-glyph">{lettera}</span>
+            <div class="lettera-line"></div>
+            <span class="lettera-count">
+              {autoriLettera.length === 1 ? '1 autore' : `${autoriLettera.length} autori`}
+            </span>
+          </div>
+
+          <div class="autori-grid">
+            {autoriLettera.map(autore => (
+              <a
+                href={`/autori/${autore.slug}`}
+                class="autore-card"
+                data-reveal
+                aria-label={`${autore.nome}, ${autore.numRacconti} racconti`}
+              >
+                {autore.numRacconti === 0 && (
+                  <span class="card-badge-draft">Nuovo</span>
+                )}
+
+                {autore.foto && (
+                  <div class="card-photo">
+                    <img src={autore.foto} alt={`Ritratto di ${autore.nome}`} loading="lazy" />
+                  </div>
+                )}
+
+                <div class="card-body">
+                  <span class="card-kanji-bg" aria-hidden="true">{autore.kanji}</span>
+
+                  <h2 class="card-nome">{autore.nome}</h2>
+                  <p class="card-anni">{autore.anni}</p>
+
+                  <div class="card-count">
+                    <span class="card-count-num">{autore.numRacconti}</span>
+                    <span class="card-count-label">
+                      {autore.numRacconti === 1 ? 'racconto' : 'racconti'}
+                    </span>
+                  </div>
+
+                  <div class="card-footer">
+                    <p class="card-temi">{autore.temi}</p>
+                    <span class="card-arrow" aria-hidden="true">→</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      );
+    })}
+  </main>
+
+  <footer>
+    <a href="/" class="footer-logo">東の声</a>
+    <ul class="footer-links-sm">
+      <li><a href="/racconti">Tutti i racconti</a></li>
+      <li><a href="/categorie">Categorie</a></li>
+      <li><a href="/autori">Autori</a></li>
+      <li><a href="/traduttore">Chi traduce</a></li>
+    </ul>
+  </footer>
+
+  <script>
+  (function () {
+
+    /* ── CURSOR ───────────────────────────────────────────────── */
+    const cursor = document.getElementById('cursor');
+    const ring   = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      if (cursor) { cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; }
+    });
+    (function animRing() {
+      rx += (mx - rx) * 0.11;
+      ry += (my - ry) * 0.11;
+      if (ring) { ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; }
+      requestAnimationFrame(animRing);
+    })();
+
+    document.querySelectorAll('.autore-card').forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        if (cursor) cursor.style.transform = 'translate(-50%,-50%) scale(1.6)';
+        if (ring)   ring.style.borderColor = 'rgba(181,39,27,0.6)';
+      });
+      card.addEventListener('mouseleave', () => {
+        if (cursor) cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+        if (ring)   ring.style.borderColor = 'rgba(181,39,27,0.38)';
+      });
+    });
+
+    /* ── NAV SCROLL ───────────────────────────────────────────── */
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 50);
+    }, { passive: true });
+
+    /* ── HIGHLIGHT LETTERA ATTIVA ─────────────────────────────── */
+    const sections   = document.querySelectorAll('.lettera-section');
+    const alphaLinks = document.querySelectorAll('.alpha-letter.has-authors');
+    const alphaBar   = document.getElementById('alpha-bar');
+
+    function setActiveLettera(l) {
+      alphaLinks.forEach(a => {
+        const active = a.getAttribute('href') === `#lettera-${l}`;
+        a.style.color      = active ? 'var(--red)' : '';
+        a.style.fontWeight = active ? '700' : '';
+      });
+      if (alphaBar) {
+        const lnk = alphaBar.querySelector(`[href="#lettera-${l}"]`);
+        if (lnk) {
+          const br = alphaBar.getBoundingClientRect();
+          const lr = lnk.getBoundingClientRect();
+          if (lr.left < br.left + 60 || lr.right > br.right - 60)
+            lnk.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+      }
+    }
+
+    sections.forEach(s => {
+      new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          setActiveLettera(e.target.id.replace('section-', ''));
+        });
+      }, { rootMargin: '-10% 0px -80% 0px', threshold: 0 }).observe(s);
+    });
+
+    /* ── REVEAL STAGGERATO ────────────────────────────────────── */
+    document.querySelectorAll('.autori-grid').forEach(grid => {
+      const firstCard = grid.querySelector('.autore-card');
+      if (!firstCard) return;
+      new IntersectionObserver((entries, obs) => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          const cards = Array.from(grid.querySelectorAll('.autore-card:not(.visible)'));
+          cards.forEach((card, i) => {
+            setTimeout(() => card.classList.add('visible'), i * 55);
+          });
+          obs.disconnect();
+        });
+      }, { threshold: 0.05 }).observe(firstCard);
+    });
+
+    /* ── SMOOTH SCROLL alpha-bar ──────────────────────────────── */
+    document.querySelectorAll('.alpha-letter.has-authors').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const href = link.getAttribute('href');
+        if (!href) return;
+        const target = document.querySelector(href);
+        if (!target) return;
+        const top = target.getBoundingClientRect().top + window.scrollY - 117;
+        window.scrollTo({ top, behavior: 'smooth' });
+      });
+    });
+
+    
+
+  })();
+  </script>
+</body>
+</html>

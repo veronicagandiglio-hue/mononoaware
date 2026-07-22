@@ -1,0 +1,12 @@
+---
+import { getCollection } from 'astro:content';
+const racconti = await getCollection('racconti', ({ data }) => !data.isDraft);
+---
+<ul>
+  {racconti.map(r => (
+    <li>
+      <a href={`/racconti/${r.id}`}>{r.data.title}</a>
+      <code> — id: {r.id}</code>
+    </li>
+  ))}
+</ul>

@@ -1,0 +1,684 @@
+---
+// src/pages/categorie.astro
+import { getCollection } from 'astro:content';
+
+const racconti = await getCollection('racconti', ({ data }) => !data.isDraft);
+
+const categorie = [
+  {
+    slug: 'io-frammentato',
+    nome: 'Io Frammentato',
+    nomeJp: '断片',
+    lettura: 'Danpen',
+    descrizione: 'Voci che si spezzano. Identità in frantumi, coscienze che si moltiplicano o si dissolvono. Racconti dove il narratore non sa più chi è — o non vuole saperlo.',
+    colore: '#7a6a5a',
+    accent: '#c9a84c',
+  },
+  {
+    slug: 'carne-e-fango',
+    nome: 'Carne e Fango',
+    nomeJp: '肉と泥',
+    lettura: 'Niku to Doro',
+    descrizione: 'Il corpo come prigione, come campo di battaglia, come unica verità rimasta. Storie di fame, desiderio, dolore fisico e quella strana dignità che nasce dal fango.',
+    colore: '#8b3a2a',
+    accent: '#b5271b',
+  },
+  {
+    slug: 'ombre-orientali',
+    nome: 'Ombre Orientali',
+    nomeJp: '東の影',
+    lettura: 'Higashi no Kage',
+    descrizione: 'Spiriti, volpi trasformate, draghi dormienti e fantasmi che non hanno ricevuto il congedo. Il soprannaturale come linguaggio per dire ciò che il reale non riesce a contenere.',
+    colore: '#2a4a5e',
+    accent: '#4a8fa8',
+  },
+  {
+    slug: 'satira',
+    nome: 'Satira',
+    nomeJp: '諷刺',
+    lettura: 'Fūshi',
+    descrizione: 'Il potere ridicolizzato. I burocrati, gli imperatori, i santi da strapazzo. Racconti che ridono — ma con quella risata amara che graffia mentre diverte.',
+    colore: '#3a5a2a',
+    accent: '#6a9a4a',
+  },
+];
+
+// conta i racconti per categoria
+const conteggioPerCategoria = racconti.reduce((acc, r) => {
+  const cat = r.data.category;
+  acc[cat] = (acc[cat] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
+
+// mappa slug → nome categoria enum
+const slugToEnum: Record<string, string> = {
+  'io-frammentato': 'Io Frammentato',
+  'carne-e-fango': 'Carne e Fango',
+  'ombre-orientali': 'Ombre Orientali',
+  'satira': 'Satira',
+};
+---
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Categorie — 東の声</title>
+  <meta name="description" content="Quattro voci, quattro mondi. Esplora i racconti per categoria." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Noto+Serif+JP:wght@200;300;400;700&family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #0d0c0a;
+      --paper: #f5f0e8;
+      --paper-dark: #ede7d9;
+      --red: #b5271b;
+      --gold: #c9a84c;
+      --mist: #8a8278;
+      --mist-light: #b8b2aa;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-serif: 'DM Serif Display', serif;
+      --font-body: 'EB Garamond', serif;
+      --font-jp: 'Noto Serif JP', serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+    }
+
+    /* ─── CURSOR ─── */
+    .cursor {
+      width: 8px; height: 8px;
+      background: var(--red);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+    }
+    .cursor-ring {
+      width: 32px; height: 32px;
+      border: 1px solid rgba(181,39,27,0.4);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.2rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.4s ease, border-color 0.4s ease;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(245,240,232,0.96);
+      backdrop-filter: blur(10px);
+      border-bottom-color: rgba(13,12,10,0.1);
+    }
+    .nav-logo {
+      font-family: var(--font-jp);
+      font-size: 1.2rem;
+      font-weight: 300;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: 0.12em;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { opacity: 1; }
+
+    /* ─── HERO ─── */
+    .page-hero {
+      min-height: 60svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 8rem 2.5rem 5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg-kanji {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-jp);
+      font-size: clamp(12rem, 35vw, 28rem);
+      font-weight: 200;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(13,12,10,0.05);
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+      opacity: 0;
+      animation: slowReveal 1.5s ease forwards 0.3s;
+    }
+    @keyframes slowReveal { to { opacity: 1; } }
+
+    .hero-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--mist);
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.5s;
+    }
+    .page-hero h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 400;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      animation: fadeUp 0.9s ease forwards 0.7s;
+    }
+    .page-hero h1 em { font-style: italic; color: var(--red); }
+
+    .hero-subtitle {
+      margin-top: 2rem;
+      font-style: italic;
+      color: var(--mist);
+      font-size: 1.1rem;
+      line-height: 1.7;
+      max-width: 45ch;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      animation: fadeUp 0.9s ease forwards 0.9s;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── SECTION MARKER ─── */
+    .section-marker {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 4rem 2.5rem 0;
+    }
+    .section-marker-num {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      color: var(--mist);
+    }
+    .section-marker-line {
+      flex: 1; height: 1px;
+      background: rgba(13,12,10,0.15);
+    }
+    .section-marker-jp {
+      font-family: var(--font-jp);
+      font-size: 0.7rem;
+      font-weight: 300;
+      color: var(--mist);
+      letter-spacing: 0.15em;
+    }
+
+    /* ─── CATEGORIE LISTA ─── */
+    .categorie-list {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 4rem 2.5rem 8rem;
+    }
+
+    .categoria-item {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      border-top: 1px solid rgba(13,12,10,0.12);
+      padding: 5rem 0;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .categoria-item:last-child {
+      border-bottom: 1px solid rgba(13,12,10,0.12);
+    }
+    .categoria-item.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* barra colorata sinistra che si espande all'hover */
+    .categoria-item::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 0;
+      background: var(--cat-accent);
+      opacity: 0.12;
+      transition: width 0.5s ease;
+    }
+    .categoria-item:hover::before { width: 100%; }
+
+    /* linea colorata in fondo */
+    .categoria-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--cat-accent);
+      transition: width 0.5s ease;
+    }
+    .categoria-item:hover::after { width: 100%; }
+
+    .cat-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 140px 1fr auto;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    /* numero grande */
+    .cat-num {
+      font-family: var(--font-display);
+      font-size: clamp(5rem, 10vw, 9rem);
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(13,12,10,0.15);
+      transition: -webkit-text-stroke 0.3s ease, color 0.3s ease;
+      user-select: none;
+    }
+    .categoria-item:hover .cat-num {
+      -webkit-text-stroke: 1px var(--cat-accent);
+    }
+
+    .cat-body {}
+
+    .cat-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .cat-nome {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 400;
+      line-height: 1;
+      transition: color 0.3s ease;
+    }
+    .categoria-item:hover .cat-nome { color: var(--cat-accent); }
+
+    .cat-jp-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+    .cat-jp {
+      font-family: var(--font-jp);
+      font-size: 1.1rem;
+      font-weight: 200;
+      color: var(--mist);
+      letter-spacing: 0.1em;
+    }
+    .cat-romaji {
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--mist-light);
+    }
+
+    .cat-desc {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--mist);
+      font-style: italic;
+      max-width: 55ch;
+    }
+
+    .cat-cta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+    .cat-count {
+      font-family: var(--font-display);
+      font-size: 3.5rem;
+      line-height: 1;
+      color: var(--cat-accent);
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+    .categoria-item:hover .cat-count { opacity: 1; }
+    .cat-count-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--mist-light);
+      text-align: right;
+    }
+    .cat-arrow {
+      font-size: 1.5rem;
+      color: var(--mist-light);
+      transition: transform 0.3s ease, color 0.3s ease;
+      margin-top: 0.5rem;
+    }
+    .categoria-item:hover .cat-arrow {
+      transform: translateX(8px);
+      color: var(--cat-accent);
+    }
+
+    /* ─── TICKER ─── */
+    .ticker-wrap {
+      overflow: hidden;
+      border-top: 1px solid rgba(13,12,10,0.12);
+      border-bottom: 1px solid rgba(13,12,10,0.12);
+      padding: 0.9rem 0;
+      background: var(--ink);
+    }
+    .ticker-track {
+      display: flex;
+      white-space: nowrap;
+      animation: ticker 35s linear infinite;
+    }
+    .ticker-item {
+      font-family: var(--font-jp);
+      font-size: 0.85rem;
+      font-weight: 200;
+      letter-spacing: 0.3em;
+      color: rgba(245,240,232,0.45);
+      padding: 0 3rem;
+      flex-shrink: 0;
+    }
+    .ticker-item.accent { color: var(--gold); opacity: 1; }
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* ─── STATS STRIP ─── */
+    .stats-strip {
+      background: var(--paper-dark);
+      padding: 5rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+    }
+    .stat-item {
+      text-align: center;
+      padding: 0 4rem;
+      border-right: 1px solid rgba(13,12,10,0.12);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 6vw, 5rem);
+      line-height: 1;
+      color: var(--ink);
+      display: block;
+    }
+    .stat-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--mist);
+      margin-top: 0.5rem;
+      display: block;
+    }
+    .stat-jp {
+      font-family: var(--font-jp);
+      font-size: 0.8rem;
+      font-weight: 300;
+      color: var(--mist-light);
+      display: block;
+      margin-top: 0.2rem;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 3.5rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-logo {
+      font-family: var(--font-jp);
+      font-size: 1.5rem;
+      font-weight: 200;
+      color: var(--paper);
+      text-decoration: none;
+      letter-spacing: 0.15em;
+    }
+    .footer-links-sm {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .footer-links-sm a {
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.45);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links-sm a:hover { color: var(--paper); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      .cat-inner {
+        grid-template-columns: 80px 1fr;
+        gap: 2rem;
+      }
+      .cat-cta { display: none; }
+    }
+    @media (max-width: 600px) {
+      nav { padding: 1rem 1.2rem; }
+      .nav-links { display: none; }
+      .page-hero { padding: 6rem 1.5rem 3rem; min-height: 50svh; }
+      .categorie-list { padding: 3rem 1.5rem 5rem; }
+      .categoria-item { padding: 3rem 0; }
+      .cat-inner { grid-template-columns: 60px 1fr; gap: 1.5rem; }
+      .stats-strip { flex-direction: column; gap: 2.5rem; }
+      .stat-item { border-right: none; border-bottom: 1px solid rgba(13,12,10,0.12); padding: 0 0 2.5rem; width: 100%; }
+      .stat-item:last-child { border-bottom: none; padding-bottom: 0; }
+      footer { flex-direction: column; gap: 2rem; text-align: center; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="/" class="nav-logo">東の声</a>
+    <ul class="nav-links">
+      <li><a href="/racconti">Racconti</a></li>
+      <li><a href="/categorie" class="active">Categorie</a></li>
+      <li><a href="/traduttore">Chi traduce</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="page-hero">
+    <div class="hero-bg-kanji">分類</div>
+    <p class="hero-eyebrow">Esplora per tema</p>
+    <h1>Quattro <em>voci</em>,<br>un archivio.</h1>
+    <p class="hero-subtitle">Ogni categoria è un modo di stare nel mondo — frammentato, incarnato, soprannaturale, o ironico. Scegli la tua porta d'ingresso.</p>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker-track">
+      <span class="ticker-item">断片 Io Frammentato</span>
+      <span class="ticker-item accent">◈</span>
+      <span class="ticker-item">肉と泥 Carne e Fango</span>
+      <span class="ticker-item accent">◈</span>
+      <span class="ticker-item">東の影 Ombre Orientali</span>
+      <span class="ticker-item accent">◈</span>
+      <span class="ticker-item">諷刺 Satira</span>
+      <span class="ticker-item accent">◈</span>
+      <span class="ticker-item">断片 Io Frammentato</span>
+      <span class="ticker-item accent">◈</span>
+      <span class="ticker-item">肉と泥 Carne e Fango</span>
+      <span class="ticker-item accent">◈</span>
+      <span class="ticker-item">東の影 Ombre Orientali</span>
+      <span class="ticker-item accent">◈</span>
+      <span class="ticker-item">諷刺 Satira</span>
+      <span class="ticker-item accent">◈</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-strip">
+    <div class="stat-item">
+      <span class="stat-num">{racconti.length}</span>
+      <span class="stat-label">Racconti totali</span>
+      <span class="stat-jp">物語</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">4</span>
+      <span class="stat-label">Categorie</span>
+      <span class="stat-jp">分類</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">3</span>
+      <span class="stat-label">Paesi d'origine</span>
+      <span class="stat-jp">国</span>
+    </div>
+  </div>
+
+  <!-- SECTION MARKER -->
+  <div class="section-marker">
+    <span class="section-marker-num">001</span>
+    <div class="section-marker-line"></div>
+    <span class="section-marker-jp">分類一覧</span>
+  </div>
+
+  <!-- CATEGORIE -->
+  <div class="categorie-list">
+    {categorie.map((cat, i) => {
+      const enumKey = slugToEnum[cat.slug];
+      const count = conteggioPerCategoria[enumKey] ?? 0;
+      return (
+        <a
+          href={`/categorie/${cat.slug}`}
+          class="categoria-item"
+          style={`--cat-accent: ${cat.accent};`}
+          data-reveal
+        >
+          <div class="cat-inner">
+            <div class="cat-num">0{i + 1}</div>
+            <div class="cat-body">
+              <div class="cat-header">
+                <span class="cat-nome">{cat.nome}</span>
+                <div class="cat-jp-wrap">
+                  <span class="cat-jp">{cat.nomeJp}</span>
+                  <span class="cat-romaji">{cat.lettura}</span>
+                </div>
+              </div>
+              <p class="cat-desc">{cat.descrizione}</p>
+            </div>
+            <div class="cat-cta">
+              <span class="cat-count">{count}</span>
+              <span class="cat-count-label">racconti</span>
+              <span class="cat-arrow">→</span>
+            </div>
+          </div>
+        </a>
+      );
+    })}
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <a href="/" class="footer-logo">東の声</a>
+    <ul class="footer-links-sm">
+      <li><a href="/racconti">Tutti i racconti</a></li>
+      <li><a href="/categorie">Categorie</a></li>
+      <li><a href="/traduttore">Chi traduce</a></li>
+    </ul>
+  </footer>
+
+  <script>
+    // ─── CURSOR
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+    });
+    (function animRing() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animRing);
+    })();
+
+    // ─── NAV SCROLL
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    // ─── REVEAL
+    const items = document.querySelectorAll('[data-reveal]');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 120);
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08 });
+    items.forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>

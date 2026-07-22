@@ -1,0 +1,93 @@
+---
+// Pagina per generare i file Markdown
+---
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <title>Generatore di Racconti</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 40px auto; background: #1a1a1a; color: white; padding: 20px; }
+        input, textarea, select { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: none; }
+        button { background: #8B0000; color: white; padding: 15px; border: none; width: 100%; cursor: pointer; font-weight: bold; }
+        pre { background: #333; padding: 15px; overflow-x: auto; white-space: pre-wrap; border: 1px dashed #777; }
+    </style>
+</head>
+<body>
+    <h1>Nuovo Racconto</h1>
+    <input type="text" id="title" placeholder="Titolo del racconto">
+    <input type="text" id="author" placeholder="Autore">
+    <input type="text" id="country" placeholder="Nazione (es. Giappone)">
+    <input type="number" id="year" placeholder="Anno originale (es. 1920)">
+    <select id="category">
+        <option value="Naturalismo">Naturalismo</option>
+    <option value="Romanzo dell'Io">Romanzo dell'Io</option>
+    <option value="Estetismo">Estetismo</option>
+    <option value="Ero-Guro e Giallo">Ero-Guro e Giallo</option>
+    <option value="Folklore e Fantasmi">Folklore e Fantasmi</option>
+    <option value="Satira e Critica Sociale">Satira e Critica Sociale</option>
+    <option value="Modernismo">Modernismo</option>
+    <option value="Realismo Storico">Realismo Storico</option>
+    </select>
+    <textarea id="desc" placeholder="Breve descrizione (max 160 caratteri)"></textarea>
+    <textarea id="content" rows="10" placeholder="Incolla qui il testo del racconto..."></textarea>
+    
+    <button onclick="generateMD()">GENERA FILE .MD</button>
+
+    <div id="result" style="display:none;">
+        <h3>Copia questo contenuto:</h3>
+        <pre id="output"></pre>
+        <p>Salvalo come: <strong id="filename"></strong> nella cartella <code>src/content/racconti/</code></p>
+    </div>
+
+    <script is:inline>
+    function generateMD() {
+        const title = document.getElementById('title').value;
+        const author = document.getElementById('author').value;
+        const country = document.getElementById('country').value;
+        const year = document.getElementById('year').value;
+        const category = document.getElementById('category').value;
+        const desc = document.getElementById('desc').value;
+        const content = document.getElementById('content').value;
+
+        // Trasforma il titolo in un nome file pulito (slug)
+        const slug = title
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w\s-]/g, '') // Rimuove punteggiatura strana
+            .replace(/[\s_-]+/g, '-') // Sostituisce spazi e underscore con trattini
+            .replace(/^-+|-+$/g, ''); // Pulisce i trattini ai bordi
+
+        const filename = slug + '.md';
+        
+        const md = `---
+title: "${title}"
+author: "${author}"
+originalLanguage: "Da definire"
+translator: "Gemini / La Ladra di Racconti"
+category: "${category}"
+country: "${country}"
+yearOriginal: ${year}
+tags: []
+description: "${desc}"
+isDraft: false
+---
+
+${content}`;
+
+        // MOSTRA IL RISULTATO A VIDEO
+        document.getElementById('output').textContent = md;
+        document.getElementById('filename').textContent = filename;
+        document.getElementById('result').style.display = 'block';
+
+        // SCARICA IL FILE AUTOMATICAMENTE
+        const blob = new Blob([md], { type: 'text/markdown' });
+        const element = document.createElement('a');
+        element.href = URL.createObjectURL(blob);
+        element.download = filename;
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+</script>
+</body>
+</html>

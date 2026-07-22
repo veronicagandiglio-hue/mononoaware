@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>東 · Traduttore Letterario</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+
+/* ═══════════════════════════════════════════════════
+   VARIABILI & RESET
+═══════════════════════════════════════════════════ */
+
+:root {
+  --bg:         #f4efe8;
+  --paper:      #eee9e0;
+  --panel-bg:   #f0ebe2;
+  --fg:         #1a1410;
+  --fg-soft:    rgba(26,20,16,0.58);
+  --fg-muted:   rgba(26,20,16,0.33);
+  --border:     rgba(26,20,16,0.09);
+  --border-med: rgba(26,20,16,0.16);
+  --blood:      #b8281e;
+  --ink:        #100d0a;
+  --success:    #2d6a4f;
+  --warn:       #c07830;
+  --warn-pale:  rgba(192,120,48,0.09);
+  --tr:         0.28s ease;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'EB Garamond', serif;
+  font-size: 16px;
+  line-height: 1.7;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.022;
+  pointer-events: none;
+  z-index: 9000;
+}
+
+.container { max-width: 840px; margin: 0 auto; padding: 0 28px; }
+h1, h2, h3 { font-family: 'Playfair Display', serif; letter-spacing: -0.02em; }
+
+/* ═══════════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════════ */
+
+#app-header {
+  border-bottom: 1px solid var(--border);
+  background: rgba(244,239,232,0.93);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  position: sticky; top: 0; z-index: 500;
+}
+.header-inner { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+.logo-wrap { display: flex; align-items: center; gap: 14px; }
+.logo-kanji { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--blood); opacity: 0.75; }
+.logo-text-wrap { display: flex; flex-direction: column; gap: 1px; }
+.logo-title { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; line-height: 1; }
+.logo-sub { font-family: 'EB Garamond', serif; font-style: italic; font-size: 11px; color: var(--fg-muted); letter-spacing: 0.06em; }
+.header-actions { display: flex; gap: 8px; align-items: center; }
+
+/* ═══════════════════════════════════════════════════
+   BOTTONI
+═══════════════════════════════════════════════════ */
+
+.btn {
+  font-family: 'EB Garamond', serif;
+  font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+  cursor: pointer; border: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: all var(--tr); white-space: nowrap;
+}
+.btn-ghost { background: transparent; color: var(--fg-muted); padding: 8px 14px; border: 1px solid var(--border-med); }
+.btn-ghost:hover { color: var(--fg); border-color: var(--fg); }
+.btn-primary { background: var(--fg); color: var(--bg); padding: 13px 32px; }
+.btn-primary:hover:not(:disabled) { background: var(--blood); }
+.btn-primary:disabled { opacity: 0.38; cursor: not-allowed; }
+.btn-download { background: var(--success); color: #fff; padding: 13px 28px; }
+.btn-download:hover:not(:disabled) { opacity: 0.86; }
+.btn-download:disabled { opacity: 0.38; cursor: not-allowed; }
+.btn-outline { background: transparent; color: var(--fg-soft); padding: 8px 18px; border: 1px solid var(--border-med); }
+.btn-outline:hover { border-color: var(--fg); color: var(--fg); }
+
+/* ═══════════════════════════════════════════════════
+   TOGGLE MODALITÀ
+═══════════════════════════════════════════════════ */
+
+.mode-switch { display: flex; border: 1px solid var(--border-med); overflow: hidden; margin-bottom: 40px; width: fit-content; }
+.mode-btn {
+  font-family: 'EB Garamond', serif; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+  cursor: pointer; border: none; padding: 9px 22px;
+  background: transparent; color: var(--fg-muted); transition: all var(--tr);
+  border-right: 1px solid var(--border-med);
+}
+.mode-btn:last-child { border-right: none; }
+.mode-btn.active { background: var(--fg); color: var(--bg); }
+.mode-btn:not(.active):hover { background: var(--paper); color: var(--fg); }
+
+/* ═══════════════════════════════════════════════════
+   IMPOSTAZIONI
+═══════════════════════════════════════════════════ */
+
+#settings-panel {
+  background: var(--panel-bg); border-bottom: 1px solid var(--border);
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.55s cubic-bezier(0.16,1,0.3,1);
+}
+#settings-panel.open { max-height: 2000px; }
+.settings-inner { padding: 44px 0 48px; }
+.settings-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 20px; }
+.settings-row.single { grid-template-columns: 1fr; }
+.settings-section { font-family: 'EB Garamond', serif; font-size: 9px; letter-spacing: 0.36em; text-transform: uppercase; color: var(--fg-muted); display: block; margin-bottom: 28px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.settings-sub { font-family: 'EB Garamond', serif; font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--fg-muted); display: block; margin: 24px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.settings-footer { display: flex; gap: 12px; align-items: center; margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border); }
+.settings-hint { font-family: 'EB Garamond', serif; font-style: italic; font-size: 13px; color: var(--fg-muted); flex: 1; }
+
+/* ═══════════════════════════════════════════════════
+   FORM
+═══════════════════════════════════════════════════ */
+
+.field { margin-bottom: 0; }
+.field label { display: block; font-family: 'EB Garamond', serif; font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--fg-muted); margin-bottom: 8px; }
+.field input, .field select, .field textarea {
+  width: 100%; background: var(--bg); border: 1px solid var(--border-med); color: var(--fg);
+  font-family: 'Cormorant Garamond', serif; font-size: 17px; padding: 10px 14px;
+  outline: none; transition: border-color var(--tr);
+  -webkit-appearance: none; appearance: none; border-radius: 0;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--fg); }
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(26,20,16,0.3)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+}
+.field textarea { resize: vertical; min-height: 160px; line-height: 1.62; font-size: 13px; font-family: 'JetBrains Mono', monospace; font-weight: 300; }
+.field input[type="password"] { font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.04em; }
+
+#main-form { padding: 64px 0 36px; }
+.form-eyebrow { font-family: 'EB Garamond', serif; font-style: italic; font-size: 12px; letter-spacing: 0.22em; color: rgba(184,40,30,0.7); text-transform: uppercase; display: block; margin-bottom: 10px; }
+.form-title { font-family: 'Playfair Display', serif; font-size: clamp(30px,5vw,46px); font-weight: 900; line-height: 0.94; letter-spacing: -0.02em; margin-bottom: 36px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.form-grid .full { grid-column: 1 / -1; }
+
+.cors-alert { display: none; background: var(--warn-pale); border: 1px solid rgba(192,120,48,0.28); padding: 18px 22px; margin-bottom: 24px; }
+.cors-alert.visible { display: block; }
+.cors-alert-title { font-family: 'EB Garamond', serif; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--warn); display: block; margin-bottom: 6px; }
+.cors-alert p { font-family: 'EB Garamond', serif; font-size: 14px; color: var(--fg-soft); margin-bottom: 16px; line-height: 1.6; }
+
+#revise-area { display: none; margin-bottom: 24px; }
+#revise-area.visible { display: block; }
+
+.form-actions { display: flex; align-items: center; gap: 20px; margin-top: 36px; flex-wrap: wrap; }
+.kbd-hint { font-family: 'EB Garamond', serif; font-size: 12px; color: var(--fg-muted); }
+kbd { font-family: 'JetBrains Mono', monospace; font-size: 10px; background: var(--border); border: 1px solid var(--border-med); padding: 2px 6px; color: var(--fg-soft); }
+
+.autosave-bar { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+.autosave-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--fg-muted); transition: background 0.4s; }
+.autosave-dot.saved { background: var(--success); }
+.autosave-status { font-family: 'EB Garamond', serif; font-size: 11px; letter-spacing: 0.1em; color: var(--fg-muted); font-style: italic; }
+
+/* ═══════════════════════════════════════════════════
+   PROGRESS — 5 STEP
+═══════════════════════════════════════════════════ */
+
+#progress-area { display: none; padding: 48px 0 32px; }
+#progress-area.visible { display: block; }
+.progress-track { display: flex; align-items: center; margin-bottom: 36px; }
+.prog-step { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 54px; }
+.prog-dot {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1.5px solid var(--border-med);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-size: 11px; font-style: italic;
+  color: var(--fg-muted);
+  transition: all 0.4s cubic-bezier(0.16,1,0.3,1); background: var(--bg);
+}
+.prog-label { font-family: 'EB Garamond', serif; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-muted); transition: color var(--tr); text-align: center; }
+.prog-connector { flex: 1; height: 1px; background: var(--border-med); margin-bottom: 22px; transition: background 0.5s ease; }
+
+.prog-step.loading .prog-dot { border-color: var(--blood); color: var(--blood); animation: dot-pulse 1.3s ease-in-out infinite; }
+.prog-step.loading .prog-label { color: var(--fg-soft); }
+.prog-step.done .prog-dot { background: var(--fg); border-color: var(--fg); color: var(--bg); }
+.prog-step.done .prog-label { color: var(--fg-soft); }
+.prog-connector.done { background: var(--fg); }
+.prog-step.skipped .prog-dot { background: var(--paper); border-style: dashed; }
+.prog-connector.skipped { background: repeating-linear-gradient(90deg, var(--border-med) 0, var(--border-med) 4px, transparent 4px, transparent 8px); }
+
+@keyframes dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(184,40,30,0.3); }
+  50%       { box-shadow: 0 0 0 6px rgba(184,40,30,0); }
+}
+
+.progress-msg { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px; color: var(--fg-soft); text-align: center; min-height: 28px; }
+.chunk-info { font-family: 'EB Garamond', serif; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-muted); text-align: center; margin-top: 6px; min-height: 18px; }
+
+/* ═══════════════════════════════════════════════════
+   RISULTATI
+═══════════════════════════════════════════════════ */
+
+#results-area { display: none; padding: 8px 0 88px; }
+#results-area.visible { display: block; }
+
+.result-panel { border: 1px solid var(--border); margin-bottom: 12px; overflow: hidden; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; cursor: pointer; background: var(--panel-bg); user-select: none; transition: background var(--tr); }
+.panel-head:hover { background: rgba(26,20,16,0.04); }
+.panel-head-left { display: flex; align-items: center; gap: 14px; }
+.panel-num { font-family: 'Playfair Display', serif; font-style: italic; font-size: 12px; color: var(--blood); opacity: 0.8; min-width: 24px; }
+.panel-name { font-family: 'EB Garamond', serif; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-soft); }
+.panel-chevron { font-size: 9px; color: var(--fg-muted); transition: transform 0.3s ease; }
+.result-panel.open .panel-chevron { transform: rotate(180deg); }
+.panel-body { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.16,1,0.3,1); }
+.result-panel.open .panel-body { max-height: 520px; overflow-y: auto; }
+.result-panel.open.auto-height .panel-body { max-height: none; }
+
+.panel-content { padding: 24px 22px; font-family: 'Cormorant Garamond', serif; font-size: 17px; line-height: 1.78; color: var(--fg-soft); white-space: pre-wrap; word-break: break-word; }
+.panel-content.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 300; line-height: 1.62; }
+.final-editor-wrap { padding: 20px 22px; }
+.final-editor { width: 100%; border: none; outline: none; resize: none; background: transparent; font-family: 'Cormorant Garamond', serif; font-size: 17px; line-height: 1.78; color: var(--fg-soft); min-height: 480px; display: block; }
+
+.output-bar { display: flex; align-items: center; gap: 14px; padding: 24px 0 0; border-top: 1px solid var(--border); margin-top: 16px; flex-wrap: wrap; }
+.word-count { font-family: 'EB Garamond', serif; font-size: 12px; color: var(--fg-muted); letter-spacing: 0.08em; flex: 1; min-width: 120px; }
+
+.error-box { display: none; border: 1px solid rgba(184,40,30,0.28); background: rgba(184,40,30,0.06); padding: 18px 22px; margin-top: 16px; }
+.error-box.visible { display: block; }
+.error-box p { font-family: 'EB Garamond', serif; font-size: 14px; color: var(--blood); line-height: 1.6; }
+
+#toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(16px); background: var(--ink); color: var(--bg); padding: 11px 22px; font-family: 'EB Garamond', serif; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity 0.28s, transform 0.28s; z-index: 9999; white-space: nowrap; }
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+#app-footer { border-top: 1px solid var(--border); padding: 28px 0; }
+.footer-note { font-family: 'EB Garamond', serif; font-style: italic; font-size: 13px; color: var(--fg-muted); text-align: center; }
+
+@media (max-width: 620px) {
+  .container { padding: 0 18px; }
+  .form-grid, .settings-row { grid-template-columns: 1fr; }
+  .prog-label { display: none; }
+  .output-bar { flex-direction: column; align-items: flex-start; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="app-header">
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <span class="logo-kanji">東</span>
+        <div class="logo-text-wrap">
+          <span class="logo-title">Traduttore Letterario</span>
+          <span class="logo-sub">Narrativa Giapponese Classica</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost" id="btn-load-draft" style="display:none">↺&ensp;Bozza salvata</button>
+        <button class="btn btn-ghost" id="btn-settings">⚙&thinsp; Impostazioni</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- IMPOSTAZIONI -->
+<div id="settings-panel">
+  <div class="container">
+    <div class="settings-inner">
+      <span class="settings-section">Configurazione globale · salvata localmente nel browser</span>
+
+      <div class="settings-row">
+        <div class="field">
+          <label>API Key — Google AI Studio</label>
+          <input type="password" id="cfg-api-key" placeholder="AIza…" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="field">
+          <label>Modello Gemini</label>
+          <input type="text" id="cfg-model" placeholder="es. gemini-3.1-pro-preview" spellcheck="false">
+        </div>
+      </div>
+
+      <span class="settings-sub">Prompt 1 — Traduzione &nbsp;·&nbsp; variabili: {autore} {titolo} {categoria} {testo}</span>
+      <div class="settings-row single">
+        <div class="field"><textarea id="cfg-prompt1" style="min-height:200px;"></textarea></div>
+      </div>
+
+      <span class="settings-sub">Prompt 2 — Rilettura &nbsp;·&nbsp; variabili: {autore} {titolo} {testo} &nbsp;·&nbsp; eseguito sull'intero testo</span>
+      <div class="settings-row single">
+        <div class="field"><textarea id="cfg-prompt2" style="min-height:200px;"></textarea></div>
+      </div>
+
+      <span class="settings-sub">Prompt 3 — Consistency Pass &nbsp;·&nbsp; variabili: {autore} {titolo} {testo} &nbsp;·&nbsp; eseguito sull'intero testo assemblato</span>
+      <div class="settings-row single">
+        <div class="field"><textarea id="cfg-prompt3" style="min-height:180px;"></textarea></div>
+      </div>
+
+      <div class="settings-footer">
+        <span class="settings-hint">La API key non lascia mai il tuo computer — salvata solo in localStorage locale.</span>
+        <button class="btn btn-ghost" id="btn-reset-prompts">Ripristina default</button>
+        <button class="btn btn-primary" id="btn-save-settings">Salva impostazioni</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FORM -->
+<main>
+<div class="container">
+<section id="main-form">
+
+  <span class="form-eyebrow" id="form-eyebrow">Nuovo racconto</span>
+  <h1 class="form-title" id="form-title">Avvia<br>la traduzione</h1>
+
+  <!-- Toggle modalità -->
+  <div class="mode-switch">
+    <button class="mode-btn active" id="btn-mode-full"   onclick="setMode('full')">Traduzione completa</button>
+    <button class="mode-btn"        id="btn-mode-revise" onclick="setMode('revise')">Solo rilettura</button>
+  </div>
+
+  <!-- CORS alert + paste manuale -->
+  <div class="cors-alert" id="cors-alert">
+    <span class="cors-alert-title">⚠ Recupero automatico non disponibile</span>
+    <p>Il sito non permette il recupero diretto del testo (restrizione CORS). Incolla manualmente il testo originale nel campo qui sotto.</p>
+    <div class="field">
+      <label>Testo originale — incolla qui</label>
+      <textarea id="manual-text" style="min-height:220px;" placeholder="Incolla il testo del racconto in giapponese…"></textarea>
+    </div>
+  </div>
+
+  <!-- Area solo rilettura -->
+  <div id="revise-area">
+    <div class="field">
+      <label>Traduzione da rileggere — incolla qui</label>
+      <textarea id="revise-text" style="min-height:300px;"
+        placeholder="Incolla la traduzione esistente. Verrà sottoposta a rilettura (prompt 2) e consistency pass (prompt 3)…"></textarea>
+    </div>
+  </div>
+
+  <!-- Metadati -->
+  <div class="form-grid">
+    <div class="field full" id="url-field">
+      <label>URL del racconto originale</label>
+      <input type="url" id="f-url" placeholder="https://www.aozora.gr.jp/…">
+    </div>
+    <div class="field">
+      <label>Autore</label>
+      <input type="text" id="f-author" placeholder="Izumi Kyōka">
+    </div>
+    <div class="field">
+      <label>Titolo italiano</label>
+      <input type="text" id="f-title" placeholder="La lanterna sotto la pioggia">
+    </div>
+    <div class="field">
+      <label>Categoria</label>
+      <select id="f-category">
+        <option>Naturalismo</option>
+        <option>Romanzo dell'Io</option>
+        <option>Estetismo</option>
+        <option>Ero-Guro e Giallo</option>
+        <option>Folklore e Fantasmi</option>
+        <option>Satira e Critica Sociale</option>
+        <option>Modernismo</option>
+        <option>Realismo Storico</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Anno originale</label>
+      <input type="number" id="f-year" placeholder="1898" min="600" max="1970">
+    </div>
+    <div class="field">
+      <label>Paese</label>
+      <input type="text" id="f-country" value="Giappone">
+    </div>
+    <div class="field">
+      <label>Periodo storico</label>
+      <input type="text" id="f-period" placeholder="Periodo Meiji">
+    </div>
+    <div class="field">
+      <label>Titolo originale in giapponese (facoltativo)</label>
+      <input type="text" id="f-titleJp" placeholder="提灯の下に雨">
+    </div>
+    <div class="field">
+      <label>Traduttore</label>
+      <input type="text" id="f-translator" value="Gemini 2.5 Pro">
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-primary" id="btn-translate">Traduci racconto &nbsp;→</button>
+    <span class="kbd-hint">oppure <kbd>Ctrl</kbd>+<kbd>Enter</kbd></span>
+  </div>
+
+  <div class="autosave-bar" id="autosave-bar" style="display:none">
+    <div class="autosave-dot" id="autosave-dot"></div>
+    <span class="autosave-status" id="autosave-status"></span>
+  </div>
+
+  <div class="error-box" id="error-box"><p id="error-text"></p></div>
+</section>
+
+<!-- PROGRESS 5 STEP -->
+<section id="progress-area">
+  <div class="progress-track">
+    <div class="prog-step" id="pstep-1">
+      <div class="prog-dot">I</div>
+      <span class="prog-label">Estrazione</span>
+    </div>
+    <div class="prog-connector" id="pconn-1"></div>
+    <div class="prog-step" id="pstep-2">
+      <div class="prog-dot">II</div>
+      <span class="prog-label">Traduzione</span>
+    </div>
+    <div class="prog-connector" id="pconn-2"></div>
+    <div class="prog-step" id="pstep-3">
+      <div class="prog-dot">III</div>
+      <span class="prog-label">Rilettura</span>
+    </div>
+    <div class="prog-connector" id="pconn-3"></div>
+    <div class="prog-step" id="pstep-4">
+      <div class="prog-dot">IV</div>
+      <span class="prog-label">Coerenza</span>
+    </div>
+    <div class="prog-connector" id="pconn-4"></div>
+    <div class="prog-step" id="pstep-5">
+      <div class="prog-dot">V</div>
+      <span class="prog-label">Markdown</span>
+    </div>
+  </div>
+  <p class="progress-msg" id="progress-msg">Avvio…</p>
+  <p class="chunk-info" id="chunk-info"></p>
+</section>
+
+<!-- RISULTATI -->
+<section id="results-area">
+
+  <div class="result-panel" id="panel-extracted">
+    <div class="panel-head" onclick="togglePanel('panel-extracted')">
+      <div class="panel-head-left"><span class="panel-num">01</span><span class="panel-name">Testo originale estratto</span></div>
+      <span class="panel-chevron">▼</span>
+    </div>
+    <div class="panel-body"><div class="panel-content" id="out-extracted"></div></div>
+  </div>
+
+  <div class="result-panel" id="panel-trans1">
+    <div class="panel-head" onclick="togglePanel('panel-trans1')">
+      <div class="panel-head-left"><span class="panel-num">02</span><span class="panel-name">Prima traduzione (chunked con memoria narrativa)</span></div>
+      <span class="panel-chevron">▼</span>
+    </div>
+    <div class="panel-body"><div class="panel-content" id="out-trans1"></div></div>
+  </div>
+
+  <div class="result-panel" id="panel-trans2">
+    <div class="panel-head" onclick="togglePanel('panel-trans2')">
+      <div class="panel-head-left"><span class="panel-num">03</span><span class="panel-name">Rilettura — testo integrale</span></div>
+      <span class="panel-chevron">▼</span>
+    </div>
+    <div class="panel-body"><div class="panel-content" id="out-trans2"></div></div>
+  </div>
+
+  <div class="result-panel open auto-height" id="panel-final">
+    <div class="panel-head" onclick="togglePanel('panel-final')">
+      <div class="panel-head-left"><span class="panel-num">04</span><span class="panel-name">Consistency pass · Editor finale</span></div>
+      <span class="panel-chevron">▼</span>
+    </div>
+    <div class="panel-body">
+      <div class="final-editor-wrap">
+        <textarea class="final-editor" id="out-final" spellcheck="true"
+          placeholder="La traduzione finale apparirà qui ed è editabile…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-panel" id="panel-markdown">
+    <div class="panel-head" onclick="togglePanel('panel-markdown')">
+      <div class="panel-head-left"><span class="panel-num">05</span><span class="panel-name">Markdown · Frontmatter Astro</span></div>
+      <span class="panel-chevron">▼</span>
+    </div>
+    <div class="panel-body"><div class="panel-content mono" id="out-markdown"></div></div>
+  </div>
+
+  <div class="output-bar">
+    <span class="word-count" id="word-count"></span>
+    <button class="btn btn-outline" id="btn-refresh-md">↻&ensp;Aggiorna Markdown</button>
+    <button class="btn btn-download" id="btn-download" disabled>↓&ensp;Scarica .md</button>
+  </div>
+
+</section>
+</div>
+</main>
+
+<footer id="app-footer">
+  <div class="container">
+    <p class="footer-note">東の声 · Traduttore Letterario · strumento personale per uso locale</p>
+  </div>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════════════════════════════
+   PROMPT DEFAULT
+══════════════════════════════════════════════════════════════════ */
+
+const DEFAULT_P1 = `Sei un traduttore letterario specializzato in narrativa giapponese classica.
+Traduci il seguente testo in italiano letterario seguendo questi criteri:
+
+— Fedeltà assoluta al testo originale, rispettando lo stile e le intenzioni dell'autore
+— Resa scorrevole e naturale in italiano letterario di qualità elevata
+— Conservazione dell'atmosfera, del ritmo, delle pause e delle sfumature stilistiche
+— Per riferimenti culturali, termini intraducibili o giochi linguistici, aggiungi una nota breve tra [parentesi quadre] nel punto esatto del testo
+— Se presenti note editoriali, raccoglile alla fine con intestazione "## Note"
+
+AUTORE: {autore}
+TITOLO: {titolo}
+CATEGORIA: {categoria}
+
+Testo originale:
+{testo}
+
+Fornisci la traduzione completa. Non aggiungere commenti introduttivi o conclusivi.`;
+
+const DEFAULT_P2 = `Sei un raffinato editor letterario specializzato in narrativa giapponese tradotta in italiano.
+Rileggi e rifinisci questa traduzione con cura editoriale.
+
+Criteri:
+— Migliora la fluidità e la naturalezza della prosa italiana
+— Correggi refusi, incongruenze grammaticali o sintattiche
+— Elimina costruzioni troppo letterali o calchi strutturali dall'originale
+— Assicurati che tono, ritmo e stile dell'autore siano pienamente mantenuti
+— Raffina le scelte lessicali verso un italiano più preciso ed evocativo
+— Non alterare il significato; solo perfeziona la forma
+— Mantieni invariate le note editoriali tra [parentesi quadre] e la sezione "## Note"
+
+AUTORE: {autore}
+TITOLO: {titolo}
+
+Traduzione da revisionare:
+{testo}
+
+Restituisci solo la traduzione revisionata nel medesimo formato, senza commenti aggiuntivi.`;
+
+const DEFAULT_P3 = `Sei un editor letterario. Esegui un controllo finale di coerenza su questa traduzione.
+
+Verifica e correggi dove necessario:
+— Uniformità di nomi propri e appellativi in tutto il testo (es. "il vecchio" / "l'anziano" → scegli uno e mantienilo)
+— Coerenza del registro stilistico dall'inizio alla fine
+— Stabilità della voce narrativa e del punto di vista
+— Variazioni di tono involontarie tra sezioni (possibile effetto dell'elaborazione per segmenti)
+— Ripetizioni lessicali non intenzionali e anti-economie espressive
+— Coerenza nell'uso dei tempi verbali e della punteggiatura
+
+AUTORE: {autore}
+TITOLO: {titolo}
+
+Traduzione completa:
+{testo}
+
+Restituisci solo la traduzione con le correzioni applicate, nel medesimo formato. Non spiegare le modifiche.`;
+
+/* ══════════════════════════════════════════════════════════════════
+   COSTANTI
+══════════════════════════════════════════════════════════════════ */
+
+const CHUNK_CHARS   = 7000;   // caratteri per chunk nella prima traduzione
+const CONTEXT_CHARS = 1500;   // caratteri di contesto passati al chunk successivo
+const MAX_RETRIES   = 3;
+const RETRY_MS      = 2200;
+const AUTOSAVE_MS   = 20000;  // intervallo autosalvataggio
+
+const LS = {
+  apiKey: 'gem_apikey',
+  model:  'gem_model',
+  p1:     'gem_p1',
+  p2:     'gem_p2',
+  p3:     'gem_p3',
+  draft:  'gem_draft',
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   STATO
+══════════════════════════════════════════════════════════════════ */
+
+let _mode          = 'full';   // 'full' | 'revise'
+let _currentMd     = '';
+let _autosaveTimer = null;
+
+/* ══════════════════════════════════════════════════════════════════
+   DOM REFS
+══════════════════════════════════════════════════════════════════ */
+
+const $ = id => document.getElementById(id);
+
+const D = {
+  settingsPanel: $('settings-panel'),
+  btnSettings:   $('btn-settings'),
+  btnLoadDraft:  $('btn-load-draft'),
+  cfgApiKey:     $('cfg-api-key'),
+  cfgModel:      $('cfg-model'),
+  cfgP1:         $('cfg-prompt1'),
+  cfgP2:         $('cfg-prompt2'),
+  cfgP3:         $('cfg-prompt3'),
+  btnSave:       $('btn-save-settings'),
+  btnReset:      $('btn-reset-prompts'),
+  corsAlert:     $('cors-alert'),
+  manualText:    $('manual-text'),
+  reviseArea:    $('revise-area'),
+  reviseText:    $('revise-text'),
+  urlField:      $('url-field'),
+  formEyebrow:   $('form-eyebrow'),
+  formTitle:     $('form-title'),
+  fUrl:          $('f-url'),
+  fAuthor:       $('f-author'),
+  fTitle:        $('f-title'),
+  fCategory:     $('f-category'),
+  fYear:         $('f-year'),
+  fCountry:      $('f-country'),
+  fPeriod:       $('f-period'),
+  fTitleJp:      $('f-titleJp'),
+  fTranslator:   $('f-translator'),
+  btnTranslate:  $('btn-translate'),
+  progressArea:  $('progress-area'),
+  progressMsg:   $('progress-msg'),
+  chunkInfo:     $('chunk-info'),
+  resultsArea:   $('results-area'),
+  outExtracted:  $('out-extracted'),
+  outTrans1:     $('out-trans1'),
+  outTrans2:     $('out-trans2'),
+  outFinal:      $('out-final'),
+  outMarkdown:   $('out-markdown'),
+  errorBox:      $('error-box'),
+  errorText:     $('error-text'),
+  wordCount:     $('word-count'),
+  autosaveBar:   $('autosave-bar'),
+  autosaveDot:   $('autosave-dot'),
+  autosaveStatus:$('autosave-status'),
+  btnRefreshMd:  $('btn-refresh-md'),
+  btnDownload:   $('btn-download'),
+  toast:         $('toast'),
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   MODALITÀ
+══════════════════════════════════════════════════════════════════ */
+
+function setMode (mode) {
+  _mode = mode;
+  const isFull = mode === 'full';
+  $('btn-mode-full').classList.toggle('active', isFull);
+  $('btn-mode-revise').classList.toggle('active', !isFull);
+  D.urlField.style.display = isFull ? '' : 'none';
+  D.reviseArea.classList.toggle('visible', !isFull);
+  D.formEyebrow.textContent = isFull ? 'Nuovo racconto' : 'Revisione traduzione';
+  D.formTitle.innerHTML     = isFull ? 'Avvia<br>la traduzione' : 'Rivedi<br>la traduzione';
+  _refreshBtnLabel();
+}
+
+function _refreshBtnLabel () {
+  if (!D.btnTranslate.disabled) {
+    D.btnTranslate.textContent = _mode === 'full'
+      ? 'Traduci racconto \u00a0\u2192'
+      : 'Rivedi traduzione \u00a0\u2192';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SETTINGS
+══════════════════════════════════════════════════════════════════ */
+
+function loadSettings () {
+  D.cfgApiKey.value = localStorage.getItem(LS.apiKey) || '';
+  D.cfgModel.value  = localStorage.getItem(LS.model)  || '';
+  D.cfgP1.value     = localStorage.getItem(LS.p1)     || DEFAULT_P1;
+  D.cfgP2.value     = localStorage.getItem(LS.p2)     || DEFAULT_P2;
+  D.cfgP3.value     = localStorage.getItem(LS.p3)     || DEFAULT_P3;
+}
+
+function saveSettings () {
+  localStorage.setItem(LS.apiKey, D.cfgApiKey.value.trim());
+  localStorage.setItem(LS.model,  D.cfgModel.value.trim());
+  localStorage.setItem(LS.p1,     D.cfgP1.value);
+  localStorage.setItem(LS.p2,     D.cfgP2.value);
+  localStorage.setItem(LS.p3,     D.cfgP3.value);
+  toast('Impostazioni salvate');
+}
+
+function resetPrompts () {
+  D.cfgP1.value = DEFAULT_P1;
+  D.cfgP2.value = DEFAULT_P2;
+  D.cfgP3.value = DEFAULT_P3;
+  toast('Prompt ripristinati ai valori di default');
+}
+
+function getCfg () {
+  return {
+    apiKey: D.cfgApiKey.value.trim() || localStorage.getItem(LS.apiKey) || '',
+    model:  D.cfgModel.value.trim()  || localStorage.getItem(LS.model)  || '',
+    p1:     D.cfgP1.value || DEFAULT_P1,
+    p2:     D.cfgP2.value || DEFAULT_P2,
+    p3:     D.cfgP3.value || DEFAULT_P3,
+  };
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   AUTO-SAVE
+══════════════════════════════════════════════════════════════════ */
+
+function autosave () {
+  const finalText = D.outFinal.value;
+  if (!finalText && !D.outTrans1.textContent) return;
+
+  const draft = {
+    ts:        Date.now(),
+    mode:      _mode,
+    fields:    getFields(),
+    extracted: D.outExtracted.textContent,
+    trans1:    D.outTrans1.textContent,
+    trans2:    D.outTrans2.textContent,
+    final:     finalText,
+    markdown:  _currentMd,
+  };
+
+  try {
+    localStorage.setItem(LS.draft, JSON.stringify(draft));
+    _showAutosave(draft.ts);
+  } catch (e) {
+    console.warn('Autosave fallito:', e.message);
+  }
+}
+
+function _showAutosave (ts) {
+  const d    = new Date(ts);
+  const hhmm = d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+  D.autosaveBar.style.display  = 'flex';
+  D.autosaveDot.classList.add('saved');
+  D.autosaveStatus.textContent = `bozza salvata alle ${hhmm}`;
+}
+
+function checkDraftExists () {
+  try {
+    const raw = localStorage.getItem(LS.draft);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    const age = Date.now() - (d.ts || 0);
+    if (d.final && age < 48 * 3600 * 1000) {
+      D.btnLoadDraft.style.display = '';
+    }
+  } catch {}
+}
+
+function restoreDraft () {
+  try {
+    const raw = localStorage.getItem(LS.draft);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+
+    if (d.fields) {
+      const f = d.fields;
+      D.fUrl.value        = f.url        || '';
+      D.fAuthor.value     = f.author     || '';
+      D.fTitle.value      = f.title      || '';
+      D.fCategory.value   = f.category   || D.fCategory.value;
+      D.fYear.value       = f.year       || '';
+      D.fCountry.value    = f.country    || 'Giappone';
+      D.fPeriod.value     = f.period     || '';
+      D.fTitleJp.value    = f.titleJp    || '';
+      D.fTranslator.value = f.translator || 'Gemini 3.1 Pro';
+    }
+    if (d.mode)      setMode(d.mode);
+    if (d.extracted) D.outExtracted.textContent = d.extracted;
+    if (d.trans1)    D.outTrans1.textContent    = d.trans1;
+    if (d.trans2)    D.outTrans2.textContent    = d.trans2;
+    if (d.final) {
+      D.outFinal.value = d.final;
+      updateWordCount(d.final);
+      D.resultsArea.classList.add('visible');
+      D.btnDownload.disabled = false;
+      $('panel-final').classList.add('open');
+    }
+    if (d.markdown) {
+      _currentMd = d.markdown;
+      D.outMarkdown.textContent = d.markdown;
+    }
+    if (d.ts) _showAutosave(d.ts);
+
+    const hhmm = new Date(d.ts).toLocaleTimeString('it-IT', { hour:'2-digit', minute:'2-digit' });
+    toast(`Bozza ripristinata (autosalvataggio delle ${hhmm})`);
+    D.btnLoadDraft.style.display = 'none';
+  } catch (e) {
+    toast('Errore nel ripristino bozza: ' + e.message);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   UI HELPERS
+══════════════════════════════════════════════════════════════════ */
+
+let _toastTimer;
+function toast (msg, ms = 3200) {
+  D.toast.textContent = msg;
+  D.toast.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => D.toast.classList.remove('show'), ms);
+}
+
+function togglePanel (id) { $(id).classList.toggle('open'); }
+function showError (msg)  { D.errorText.textContent = msg; D.errorBox.classList.add('visible'); }
+function hideError ()     { D.errorBox.classList.remove('visible'); }
+
+function pStep (n, state) {
+  const el = $(`pstep-${n}`);
+  if (!el) return;
+  el.classList.remove('loading','done','skipped');
+  if (state) el.classList.add(state);
+}
+function pConn (n, state) {
+  const el = $(`pconn-${n}`);
+  if (!el) return;
+  el.classList.remove('done','skipped');
+  if (state) el.classList.add(state);
+}
+
+function setProgress (step, msg, chunk = '') {
+  for (let i = 1; i <= 5; i++) {
+    if      (i < step)  { pStep(i,'done');    pConn(i,'done'); }
+    else if (i === step){ pStep(i,'loading'); }
+    else                { pStep(i,'');        pConn(i,''); }
+  }
+  D.progressMsg.textContent = msg;
+  D.chunkInfo.textContent   = chunk;
+}
+
+function skipStepsUI (...ns) {
+  ns.forEach(n => { pStep(n,'skipped'); pConn(n,'skipped'); });
+}
+
+function allDone (msg = 'Completato.') {
+  for (let i = 1; i <= 5; i++) { pStep(i,'done'); pConn(i,'done'); }
+  D.progressMsg.textContent = msg;
+  D.chunkInfo.textContent   = '';
+}
+
+function setRunning (yes) {
+  D.btnTranslate.disabled = yes;
+  if (yes) {
+    D.btnTranslate.textContent = 'Elaborazione…';
+  } else {
+    _refreshBtnLabel();
+  }
+}
+
+function updateWordCount (text) {
+  const w = text.trim().split(/\s+/).filter(Boolean).length;
+  const c = text.replace(/\s/g,'').length;
+  D.wordCount.textContent = `${w.toLocaleString('it-IT')} parole · ${c.toLocaleString('it-IT')} caratteri`;
+}
+
+function getFields () {
+  return {
+    url:        D.fUrl.value.trim(),
+    author:     D.fAuthor.value.trim(),
+    title:      D.fTitle.value.trim(),
+    category:   D.fCategory.value,
+    year:       D.fYear.value.trim(),
+    country:    D.fCountry.value.trim(),
+    period:     D.fPeriod.value.trim(),
+    titleJp:    D.fTitleJp.value.trim(),
+    translator: D.fTranslator.value.trim() || 'Gemini 3.1 Pro',
+    origLang:   'Giapponese',
+  };
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SCRAPING & ESTRAZIONE TESTO
+══════════════════════════════════════════════════════════════════ */
+
+async function fetchPage (url) {
+  const proxies = [
+    u => u,
+    u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+    u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+    u => `https://thingproxy.freeboard.io/fetch/${u}`,
+  ];
+
+  for (const build of proxies) {
+    try {
+      const res = await fetch(build(url), {
+        signal: AbortSignal.timeout(14000),
+        headers: { Accept: 'text/html,application/xhtml+xml' },
+      });
+      if (res.ok) {
+        const text = await res.text();
+        if (text.length > 200) return text;
+      }
+    } catch (e) { console.log('Proxy fallito:', build(url), e.message); }
+  }
+  return null;
+}
+
+/* ─── Pulizia specifica Aozora Bunko ─── */
+function isAozora (url) { return /aozora\.gr\.jp/i.test(url || ''); }
+
+function cleanAozora (doc) {
+  /* Rimuovi furigana (rt/rp) mantenendo solo il testo base dei kanji */
+  doc.querySelectorAll('rp, rt').forEach(el => el.remove());
+
+  /* Rimuovi sezioni editoriali note di Aozora */
+  ['.bibliographical_note','.notation_notes','.after_text',
+   '#after_the_text','.copyright','div[class*="bibliograph"]',
+   '.editor_note','.jisage_0 + hr ~ *'].forEach(sel => {
+    try { doc.querySelectorAll(sel).forEach(el => el.remove()); } catch {}
+  });
+
+  /* Rimuovi paragrafi con keyword editoriali tipiche */
+  const kwds = ['底本：','入力：','校正：','青空文庫','NDC ','翻訳底本','翻訳者','©','Copyright '];
+  doc.querySelectorAll('p, div').forEach(el => {
+    const t = el.textContent.trim();
+    if (t.length < 500 && kwds.some(k => t.includes(k))) el.remove();
+  });
+
+  /* Rimuovi l'ultimo <hr> e tutto ciò che segue (colophon) */
+  const hrs = Array.from(doc.querySelectorAll('hr'));
+  if (hrs.length) {
+    const last = hrs[hrs.length - 1];
+    let sib = last.nextSibling;
+    while (sib) { const n = sib.nextSibling; sib.parentNode?.removeChild(sib); sib = n; }
+    last.remove();
+  }
+
+  return doc;
+}
+
+function extractText (html, url) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+
+  if (isAozora(url)) cleanAozora(doc);
+
+  /* Rimuovi junk globale */
+  ['script','style','noscript','nav','header','footer','aside',
+   'iframe','form','button','.nav','.menu','.sidebar','.widget',
+   '.ad','.ads','.advertisement','.banner','.popup','.modal',
+   '.comment','.comments','.social-share','.share','.related',
+   '.breadcrumb','.pagination','#nav','#menu','#footer','#header',
+   '#sidebar','#comments','[class*="cookie"]','[class*="newsletter"]',
+   '[role="navigation"]','[role="banner"]',
+   '[role="complementary"]','[role="contentinfo"]',
+  ].forEach(s => { try { doc.querySelectorAll(s).forEach(el => el.remove()); } catch {} });
+
+  /* Selettori contenuto principale in ordine di priorità */
+  const targets = [
+    'article[class*="story"]','article[class*="text"]','article',
+    '[role="main"]','main',
+    '#honbun','.honbun','.main_text','#works_text','.works-text',
+    '.content','.post-content','.entry-content','.article-content',
+    '.story-body','#content','#main','.text-body',
+  ];
+  for (const sel of targets) {
+    try {
+      const el = doc.querySelector(sel);
+      if (el) {
+        const t = cleanText(el.textContent);
+        if (t.length > 300) return t;
+      }
+    } catch {}
+  }
+
+  /* Fallback: elemento con più testo */
+  const cands = Array.from(doc.querySelectorAll('div,section,article,td'))
+    .filter(el => !el.querySelector('nav,header,footer'))
+    .map(el => ({ el, len: el.textContent.trim().length }))
+    .sort((a,b) => b.len - a.len);
+  for (const { el, len } of cands.slice(0,6)) {
+    if (len > 400) return cleanText(el.textContent);
+  }
+
+  return cleanText(doc.body?.textContent ?? '');
+}
+
+function cleanText (raw) {
+  return raw
+    .replace(/\r\n/g,'\n').replace(/\r/g,'\n')
+    .replace(/[ \t]+/g,' ')
+    .replace(/\n[ \t]+/g,'\n')
+    .replace(/[ \t]+\n/g,'\n')
+    .replace(/\n{4,}/g,'\n\n\n')
+    .trim();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CHUNKING
+══════════════════════════════════════════════════════════════════ */
+
+function chunkText (text, max = CHUNK_CHARS) {
+  if (text.length <= max) return [text];
+  const chunks = [];
+  let rem = text;
+  while (rem.length > 0) {
+    if (rem.length <= max) { chunks.push(rem.trim()); break; }
+    let bp = max;
+    const pp = rem.lastIndexOf('\n\n', max);
+    if (pp > max * 0.38)       { bp = pp + 2; }
+    else {
+      const pn = rem.lastIndexOf('\n', max);
+      if (pn > max * 0.38)     { bp = pn + 1; }
+      else {
+        const pj = rem.lastIndexOf('。', max);
+        const pl = rem.lastIndexOf('. ', max);
+        const best = Math.max(pj, pl);
+        if (best > max * 0.38) bp = best + 1;
+      }
+    }
+    chunks.push(rem.substring(0, bp).trim());
+    rem = rem.substring(bp).trim();
+  }
+  return chunks.filter(c => c.length > 0);
+}
+
+function findSplitPoint (text, near) {
+  const cands = [
+    text.lastIndexOf('\n\n', near),
+    text.lastIndexOf('\n',   near),
+    text.lastIndexOf('。',   near),
+    text.lastIndexOf('. ',   near),
+  ].filter(i => i > near * 0.3);
+  return cands.length ? Math.max(...cands) + 1 : near;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   GEMINI API — restituisce { text, finishReason }
+══════════════════════════════════════════════════════════════════ */
+
+async function callGeminiRaw (prompt, { apiKey, model }, attempt = 0) {
+  if (!model)  throw new Error('Modello non configurato. Aprire Impostazioni.');
+  if (!apiKey) throw new Error('API key non configurata. Aprire Impostazioni.');
+
+  const url  = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const body = {
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { temperature: 0.38, maxOutputTokens: 8192, topP: 0.95, topK: 40 },
+    safetySettings: [
+      { category: 'HARM_CATEGORY_HARASSMENT',       threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+    ],
+  };
+
+  let res;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(120000),
+    });
+  } catch (e) {
+    if (attempt < MAX_RETRIES) { await sleep(RETRY_MS * (attempt + 1)); return callGeminiRaw(prompt, { apiKey, model }, attempt + 1); }
+    throw new Error(`Connessione fallita: ${e.message}`);
+  }
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    const msg = err?.error?.message || `HTTP ${res.status}`;
+    if ([429,500,502,503].includes(res.status) && attempt < MAX_RETRIES) {
+      const wait = RETRY_MS * (attempt + 1) + (res.status === 429 ? 5000 : 0);
+      console.warn(`Retry ${attempt+1}/${MAX_RETRIES} (${res.status}) tra ${wait}ms`);
+      await sleep(wait);
+      return callGeminiRaw(prompt, { apiKey, model }, attempt + 1);
+    }
+    throw new Error(`Gemini API: ${msg}`);
+  }
+
+  const data         = await res.json();
+  const candidate    = data?.candidates?.[0];
+  const text         = candidate?.content?.parts?.[0]?.text?.trim() ?? '';
+  const finishReason = candidate?.finishReason ?? 'STOP';
+
+  if (!text) throw new Error(`Risposta vuota da Gemini (finishReason: ${finishReason})`);
+  return { text, finishReason };
+}
+
+function sleep (ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function buildPrompt (tpl, vars) {
+  return tpl
+    .replace(/\{autore\}/g,    vars.autore    || '')
+    .replace(/\{titolo\}/g,    vars.titolo    || '')
+    .replace(/\{categoria\}/g, vars.categoria || '')
+    .replace(/\{testo\}/g,     vars.testo     || '');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   TRADUZIONE CHUNK CON MEMORIA NARRATIVA + RETRY MAX_TOKENS
+══════════════════════════════════════════════════════════════════ */
+
+/**
+ * Traduce un singolo chunk, iniettando il contesto del chunk precedente
+ * per garantire coerenza di lessico, stile e voce narrativa.
+ * Se Gemini risponde MAX_TOKENS, divide il chunk in due e riprova.
+ */
+async function translateChunk (chunkText, promptTpl, vars, cfg, prevContext, depth = 0) {
+  let finalPromptTpl = promptTpl;
+
+  if (prevContext) {
+    /* Inietta blocco-contesto prima del testo da tradurre */
+    const contextBlock =
+      `\n\n[CONTESTO DI CONTINUITÀ — fine del segmento tradotto precedente.\n` +
+      `Usalo SOLO come riferimento per mantenere coerenza di: lessico, appellativi, nomi propri, registro, voce narrativa.\n` +
+      `Non tradurre questo blocco — il testo da tradurre inizia dopo:]\n` +
+      `"…${prevContext}…"\n` +
+      `[FINE CONTESTO — il testo da tradurre ora è il seguente:]`;
+
+    finalPromptTpl = promptTpl.replace('{testo}', `{testo}${contextBlock}`);
+  }
+
+  const prompt = buildPrompt(finalPromptTpl, { ...vars, testo: chunkText });
+  const { text, finishReason } = await callGeminiRaw(prompt, cfg);
+
+  /* MAX_TOKENS: spezza ricorsivamente */
+  if (finishReason === 'MAX_TOKENS') {
+    if (chunkText.length > 1800 && depth < 3) {
+      console.warn(`MAX_TOKENS depth=${depth}: chunk ${chunkText.length} chars → divido`);
+      const sp = findSplitPoint(chunkText, Math.floor(chunkText.length / 2));
+      const a  = chunkText.slice(0, sp).trim();
+      const b  = chunkText.slice(sp).trim();
+      const rA = await translateChunk(a, promptTpl, vars, cfg, prevContext, depth + 1);
+      const rB = await translateChunk(b, promptTpl, vars, cfg, rA.slice(-CONTEXT_CHARS), depth + 1);
+      return rA + '\n\n' + rB;
+    }
+    /* Non recuperabile: accetta testo parziale */
+    toast('⚠ Un segmento potrebbe essere troncato (MAX_TOKENS). Verifica manualmente.', 6000);
+    console.warn('MAX_TOKENS non recuperabile, uso testo parziale');
+  }
+
+  return text;
+}
+
+/**
+ * Traduce l'intero testo.
+ * isFullText=true → tenta una singola chiamata (ideale per rilettura/coerenza).
+ *   Se MAX_TOKENS, ricade sul chunking con memoria.
+ * isFullText=false → chunking con memoria sin dall'inizio (ideale per prima traduzione).
+ */
+async function translateFull (text, promptTpl, vars, cfg, stepNum, stepLabel, isFullText = false) {
+
+  if (isFullText) {
+    setProgress(stepNum, `${stepLabel}… (testo integrale)`);
+    try {
+      const prompt = buildPrompt(promptTpl, { ...vars, testo: text });
+      const { text: result, finishReason } = await callGeminiRaw(prompt, cfg);
+      if (finishReason !== 'MAX_TOKENS') return result;
+      console.warn(`${stepLabel}: MAX_TOKENS su testo integrale (${text.length} chars) → chunking`);
+      toast(`Testo lungo: passo a elaborazione per segmenti`, 3500);
+    } catch (e) { throw e; }
+    /* Cade nel chunking */
+  }
+
+  const chunks = chunkText(text);
+  const total  = chunks.length;
+  const parts  = [];
+  let prevCtx  = '';
+
+  for (let i = 0; i < chunks.length; i++) {
+    const label = total > 1 ? `Segmento ${i+1} / ${total}` : '';
+    setProgress(stepNum, `${stepLabel}…`, label);
+
+    const result = await translateChunk(chunks[i], promptTpl, vars, cfg, prevCtx);
+    parts.push(result);
+    prevCtx = result.slice(-CONTEXT_CHARS);  /* contesto per il prossimo chunk */
+
+    if (i < chunks.length - 1) await sleep(600);
+  }
+
+  return parts.length === 1 ? parts[0] : parts.join('\n\n');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MARKDOWN
+══════════════════════════════════════════════════════════════════ */
+
+function parseNotes (full) {
+  const match = full.match(/\n#{1,3}\s*note\s*\n/i);
+  if (!match) return { body: full.trim(), notes: '' };
+  return { body: full.substring(0, match.index).trim(), notes: full.substring(match.index + match[0].length).trim() };
+}
+
+function firstSentence (text, max = 155) {
+  const clean = text.replace(/\*+/g,'').replace(/#{1,6}\s*/g,'').replace(/\[.*?\]/g,'').trim();
+  const ends  = [clean.indexOf('。'),clean.indexOf('. '),clean.indexOf('! '),clean.indexOf('? ')].filter(i => i > 0);
+  const end   = ends.length ? Math.min(...ends) + 1 : max;
+  return clean.substring(0, Math.min(end, max)).trim();
+}
+
+function slugify (text) {
+  return (text || '').toLowerCase()
+    .replace(/[àáâã]/g,'a').replace(/[èéêë]/g,'e')
+    .replace(/[ìíîï]/g,'i').replace(/[òóôõö]/g,'o')
+    .replace(/[ùúûü]/g,'u').replace(/[ñ]/g,'n')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+}
+
+/* Formato filename: ANNO-autore-titolo.md */
+function buildFilename (fields) {
+  return [
+    fields.year   || '',
+    fields.author ? slugify(fields.author) : '',
+    fields.title  ? slugify(fields.title)  : 'racconto',
+  ].filter(Boolean).join('-') + '.md';
+}
+
+function generateMarkdown (fields, translatedText) {
+  const { body, notes } = parseNotes(translatedText);
+  const desc = firstSentence(body);
+  const lines = [
+    '---',
+    `title: "${fields.title}"`,
+    `author: "${fields.author}"`,
+    `originalLanguage: "${fields.origLang || 'Giapponese'}"`,
+    `translator: "${fields.translator}"`,
+    `category: "${fields.category}"`,
+    `country: "${fields.country || 'Giappone'}"`,
+    fields.year    ? `yearOriginal: ${fields.year}` : null,
+    'tags: []',
+    'isDraft: false',
+    `description: "${desc}"`,
+    `excerpt: "${desc}"`,
+    fields.titleJp  ? `titleJp: "${fields.titleJp}"` : null,
+    fields.period   ? `period: "${fields.period}"`   : null,
+    fields.readTime ? `readTime: ${fields.readTime}` : null,
+    notes           ? `note: "${notes.substring(0,200).replace(/"/g,"'")}"` : null,
+    '---',
+  ].filter(l => l !== null);
+
+  let md = lines.join('\n') + '\n\n' + body;
+  if (notes) md += '\n\n## Note\n\n' + notes;
+  return md;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   WORKFLOW — TRADUZIONE COMPLETA
+══════════════════════════════════════════════════════════════════ */
+
+async function runWorkflow () {
+  hideError();
+  const cfg    = getCfg();
+  const fields = getFields();
+
+  if (!cfg.apiKey) { showError('API key non configurata. Aprire Impostazioni.'); D.settingsPanel.classList.add('open'); return; }
+  if (!cfg.model)  { showError('Modello non configurato. Aprire Impostazioni e inserire il nome del modello.'); D.settingsPanel.classList.add('open'); return; }
+  if (!fields.author || !fields.title) { showError('Inserire almeno Autore e Titolo.'); return; }
+
+  setRunning(true);
+  D.corsAlert.classList.remove('visible');
+  D.progressArea.classList.add('visible');
+  D.resultsArea.classList.remove('visible');
+  D.btnDownload.disabled = true;
+  _currentMd = '';
+
+  clearInterval(_autosaveTimer);
+  _autosaveTimer = setInterval(autosave, AUTOSAVE_MS);
+
+  try {
+    const vars = { autore: fields.author, titolo: fields.title, categoria: fields.category };
+
+    /* STEP 1 — ESTRAZIONE */
+    setProgress(1, 'Recupero testo dalla pagina…');
+    let originalText  = '';
+    const manualPasted = D.manualText.value.trim();
+
+    if (fields.url && !manualPasted) {
+      const html = await fetchPage(fields.url);
+      if (html) {
+        originalText = extractText(html, fields.url);
+        if (originalText.length < 80) {
+          originalText = cleanText(html.replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&'));
+        }
+      } else {
+        D.corsAlert.classList.add('visible');
+        D.corsAlert.scrollIntoView({ behavior:'smooth', block:'center' });
+        setProgress(1, 'Recupero automatico non disponibile — incolla il testo manualmente.');
+        setRunning(false);
+        return;
+      }
+    } else if (manualPasted) {
+      originalText = cleanText(manualPasted);
+    } else {
+      throw new Error('Inserire un URL oppure incollare il testo manualmente.');
+    }
+
+    if (originalText.length < 40) throw new Error('Testo estratto troppo breve. Controlla l\'URL o incolla manualmente.');
+    fields.readTime = Math.max(1, Math.round(originalText.split(/\s+/).length / 220));
+    D.outExtracted.textContent = originalText;
+    $('panel-extracted').classList.add('open');
+
+    /* STEP 2 — PRIMA TRADUZIONE (chunked + memoria narrativa) */
+    const trans1 = await translateFull(originalText, cfg.p1, vars, cfg, 2, 'Prima traduzione', false);
+    D.outTrans1.textContent = trans1;
+    $('panel-trans1').classList.add('open');
+
+    /* STEP 3 — RILETTURA (preferibilmente testo integrale) */
+    const trans2 = await translateFull(trans1, cfg.p2, vars, cfg, 3, 'Rilettura', true);
+    D.outTrans2.textContent = trans2;
+    $('panel-trans2').classList.add('open');
+
+    /* STEP 4 — CONSISTENCY PASS (testo integrale) */
+    const trans3 = await translateFull(trans2, cfg.p3, vars, cfg, 4, 'Consistency pass', true);
+    D.outFinal.value = trans3;
+    updateWordCount(trans3);
+    $('panel-final').classList.add('open');
+
+    /* STEP 5 — MARKDOWN */
+    setProgress(5, 'Generazione Markdown…');
+    _currentMd = generateMarkdown(fields, trans3);
+    D.outMarkdown.textContent = _currentMd;
+    $('panel-markdown').classList.add('open');
+
+    allDone('Traduzione completata con successo.');
+    D.resultsArea.classList.add('visible');
+    D.btnDownload.disabled = false;
+    D.resultsArea.scrollIntoView({ behavior:'smooth' });
+    autosave();
+    toast('✓ Traduzione completata');
+
+  } catch (err) {
+    console.error(err);
+    D.progressMsg.textContent = `⚠ ${err.message}`;
+    showError(err.message);
+    toast('Errore — ' + err.message, 6000);
+  } finally {
+    setRunning(false);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   WORKFLOW — SOLO RILETTURA
+══════════════════════════════════════════════════════════════════ */
+
+async function runRevisionOnly () {
+  hideError();
+  const cfg       = getCfg();
+  const fields    = getFields();
+  const inputText = D.reviseText.value.trim();
+
+  if (!cfg.apiKey) { showError('API key non configurata.'); D.settingsPanel.classList.add('open'); return; }
+  if (!cfg.model)  { showError('Modello non configurato.'); D.settingsPanel.classList.add('open'); return; }
+  if (!inputText)  { showError('Incolla la traduzione da rileggere nell\'area apposita.'); return; }
+  if (!fields.author || !fields.title) { showError('Inserire almeno Autore e Titolo.'); return; }
+
+  setRunning(true);
+  D.progressArea.classList.add('visible');
+  D.resultsArea.classList.remove('visible');
+  D.btnDownload.disabled = true;
+  _currentMd = '';
+
+  clearInterval(_autosaveTimer);
+  _autosaveTimer = setInterval(autosave, AUTOSAVE_MS);
+
+  /* Step 1 e 2 saltati */
+  skipStepsUI(1, 2);
+  pConn(1,'skipped'); pConn(2,'skipped');
+
+  try {
+    const vars = { autore: fields.author, titolo: fields.title, categoria: fields.category };
+
+    /* STEP 3 — RILETTURA */
+    const trans2 = await translateFull(inputText, cfg.p2, vars, cfg, 3, 'Rilettura', true);
+    D.outTrans2.textContent = trans2;
+    $('panel-trans2').classList.add('open');
+
+    /* STEP 4 — CONSISTENCY PASS */
+    const trans3 = await translateFull(trans2, cfg.p3, vars, cfg, 4, 'Consistency pass', true);
+    D.outFinal.value = trans3;
+    updateWordCount(trans3);
+    $('panel-final').classList.add('open');
+
+    /* STEP 5 — MARKDOWN */
+    setProgress(5, 'Generazione Markdown…');
+    _currentMd = generateMarkdown(fields, trans3);
+    D.outMarkdown.textContent = _currentMd;
+    $('panel-markdown').classList.add('open');
+
+    pStep(1,'done'); pStep(2,'done'); pConn(1,'done'); pConn(2,'done');
+    allDone('Revisione completata.');
+    D.resultsArea.classList.add('visible');
+    D.btnDownload.disabled = false;
+    D.resultsArea.scrollIntoView({ behavior:'smooth' });
+    autosave();
+    toast('✓ Revisione completata');
+
+  } catch (err) {
+    console.error(err);
+    D.progressMsg.textContent = `⚠ ${err.message}`;
+    showError(err.message);
+    toast('Errore — ' + err.message, 6000);
+  } finally {
+    setRunning(false);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   AZIONI OUTPUT
+══════════════════════════════════════════════════════════════════ */
+
+function refreshMarkdown () {
+  _currentMd = generateMarkdown(getFields(), D.outFinal.value);
+  D.outMarkdown.textContent = _currentMd;
+  $('panel-markdown').classList.add('open');
+  toast('Markdown aggiornato');
+}
+
+function downloadMd () {
+  if (!_currentMd) refreshMarkdown();
+  const filename = buildFilename(getFields());
+  const blob = new Blob([_currentMd], { type: 'text/markdown; charset=utf-8' });
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: filename });
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast(`Scaricato: ${filename}`);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   INIT & EVENT LISTENERS
+══════════════════════════════════════════════════════════════════ */
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadSettings();
+  checkDraftExists();
+  setMode('full');
+
+  D.btnSettings.addEventListener('click', () => D.settingsPanel.classList.toggle('open'));
+  D.btnSave.addEventListener('click', saveSettings);
+  D.btnReset.addEventListener('click', resetPrompts);
+
+  D.btnTranslate.addEventListener('click', () => {
+    _mode === 'full' ? runWorkflow() : runRevisionOnly();
+  });
+
+  D.btnLoadDraft.addEventListener('click', () => restoreDraft());
+  D.btnRefreshMd.addEventListener('click', refreshMarkdown);
+  D.btnDownload.addEventListener('click', downloadMd);
+
+  D.outFinal.addEventListener('input', e => {
+    updateWordCount(e.target.value);
+    D.autosaveDot.classList.remove('saved');
+    D.autosaveStatus.textContent = 'modifiche non salvate';
+    D.autosaveBar.style.display = 'flex';
+  });
+
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !D.btnTranslate.disabled) {
+      D.btnTranslate.click();
+    }
+  });
+});
+
+</script>
+</body>
+</html>

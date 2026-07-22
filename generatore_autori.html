@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>東 · Genera Autore .md</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=JetBrains+Mono:wght@300;400&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+
+/* ═══════════════════════════════════════════════════
+   VARIABILI & RESET
+═══════════════════════════════════════════════════ */
+
+:root {
+  --bg:         #f4efe8;
+  --paper:      #eee9e0;
+  --panel-bg:   #f0ebe2;
+  --fg:         #1a1410;
+  --fg-soft:    rgba(26,20,16,0.58);
+  --fg-muted:   rgba(26,20,16,0.33);
+  --border:     rgba(26,20,16,0.09);
+  --border-med: rgba(26,20,16,0.16);
+  --blood:      #b8281e;
+  --blood-pale: rgba(184,40,30,0.07);
+  --ink:        #100d0a;
+  --gold:       #c9a84c;
+  --gold-pale:  rgba(201,168,76,0.08);
+  --success:    #2d6a4f;
+  --success-pale: rgba(45,106,79,0.08);
+  --tr:         0.25s ease;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'EB Garamond', serif;
+  font-size: 19px;
+  line-height: 1.7;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.022;
+  pointer-events: none;
+  z-index: 9000;
+}
+
+.container { max-width: 860px; margin: 0 auto; padding: 0 28px; }
+h1, h2 { font-family: 'Playfair Display', serif; letter-spacing: -0.02em; }
+
+/* ═══════════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════════ */
+
+#app-header {
+  border-bottom: 1px solid var(--border);
+  background: rgba(244,239,232,0.94);
+  backdrop-filter: blur(14px);
+  position: sticky; top: 0; z-index: 500;
+}
+.header-inner { display: flex; align-items: center; justify-content: space-between; padding: 17px 0; }
+.logo-wrap { display: flex; align-items: center; gap: 13px; }
+.logo-kanji { font-family: 'Noto Serif JP',serif; font-size: 22px; color: var(--blood); opacity: 0.75; line-height: 1; font-weight: 300; }
+.logo-title { font-family: 'Playfair Display',serif; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; line-height: 1; }
+.logo-sub { font-family: 'EB Garamond',serif; font-style: italic; font-size: 13px; color: var(--fg-muted); letter-spacing: 0.06em; }
+.header-right { display: flex; align-items: center; gap: 13px; }
+
+.autosave-pill {
+  font-family: 'EB Garamond',serif; font-size: 15px;
+  color: var(--fg-muted); letter-spacing: 0.06em;
+  font-style: italic; transition: color var(--tr);
+}
+.autosave-pill.ok { color: var(--success); }
+
+/* ═══════════════════════════════════════════════════
+   BOTTONI
+═══════════════════════════════════════════════════ */
+
+.btn {
+  font-family: 'EB Garamond',serif; font-size: 15px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  cursor: pointer; border: none;
+  display: inline-flex; align-items: center; gap: 7px;
+  transition: all var(--tr); white-space: nowrap;
+}
+.btn-ghost { background: transparent; color: var(--fg-muted); padding: 8px 13px; border: 1px solid var(--border-med); }
+.btn-ghost:hover { color: var(--fg); border-color: var(--fg); }
+.btn-primary { background: var(--fg); color: var(--bg); padding: 13px 32px; font-size: 15px; }
+.btn-primary:hover { background: var(--blood); }
+.btn-danger { background: transparent; color: var(--blood); padding: 6px 12px; border: 1px solid rgba(184,40,30,0.25); font-size: 14px; }
+.btn-danger:hover { background: var(--blood-pale); }
+.btn-sm { padding: 7px 14px; font-size: 14px; }
+
+/* ═══════════════════════════════════════════════════
+   SEZIONI
+═══════════════════════════════════════════════════ */
+
+.section {
+  padding: 52px 0 0;
+}
+
+.section-head {
+  display: flex; align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-title-wrap { display: flex; align-items: baseline; gap: 14px; }
+
+.section-num {
+  font-family: 'Playfair Display',serif;
+  font-style: italic; font-size: 16px;
+  color: var(--blood); opacity: 0.7;
+}
+
+.section-title {
+  font-family: 'EB Garamond',serif;
+  font-size: 14px; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--fg-muted);
+}
+
+.section-hint {
+  font-family: 'EB Garamond',serif;
+  font-style: italic; font-size: 16px;
+  color: var(--fg-muted);
+}
+
+/* ═══════════════════════════════════════════════════
+   FORM FIELDS
+═══════════════════════════════════════════════════ */
+
+.field label {
+  display: block;
+  font-family: 'EB Garamond',serif; font-size: 14px;
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--fg-muted); margin-bottom: 7px;
+}
+
+.field label .optional {
+  letter-spacing: 0.15em; opacity: 0.6;
+  font-size: 14px; text-transform: none;
+}
+
+.field input, .field select, .field textarea {
+  width: 100%; background: var(--bg);
+  border: 1px solid var(--border-med);
+  color: var(--fg);
+  font-family: 'Cormorant Garamond',serif;
+  font-size: 17px; padding: 10px 14px;
+  outline: none; transition: border-color var(--tr);
+  -webkit-appearance: none; appearance: none; border-radius: 0;
+}
+
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--fg);
+}
+
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(26,20,16,0.3)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+.field textarea {
+  resize: vertical; min-height: 80px;
+  font-family: 'Cormorant Garamond',serif;
+  font-size: 16px; line-height: 1.7;
+}
+
+.field textarea.large { min-height: 320px; }
+.field textarea.tall  { min-height: 460px; }
+.field textarea.short { min-height: 56px; }
+.field textarea.medium { min-height: 160px; }
+
+.field .char-count {
+  font-family: 'EB Garamond',serif; font-size: 15px;
+  color: var(--fg-muted); text-align: right;
+  margin-top: 4px; letter-spacing: 0.04em;
+  transition: color var(--tr);
+}
+.field .char-count.warn { color: var(--blood); }
+
+.field-note {
+  font-family: 'EB Garamond',serif; font-style: italic;
+  font-size: 16px; color: var(--fg-muted);
+  margin-top: 5px; line-height: 1.5;
+}
+
+/* Checkbox */
+.field-check {
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer;
+}
+.field-check input[type="checkbox"] {
+  width: 16px; height: 16px;
+  border: 1px solid var(--border-med);
+  background: var(--bg);
+  -webkit-appearance: none; appearance: none;
+  cursor: pointer; flex-shrink: 0;
+  position: relative; border-radius: 0;
+}
+.field-check input[type="checkbox"]:checked {
+  background: var(--fg); border-color: var(--fg);
+}
+.field-check input[type="checkbox"]:checked::after {
+  content: '✓'; position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  color: var(--bg); font-size: 14px;
+  font-family: 'EB Garamond',serif;
+}
+.field-check span {
+  font-family: 'EB Garamond',serif; font-size: 16px;
+  color: var(--fg-soft); letter-spacing: 0.04em;
+}
+
+/* Grid */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.form-grid .full { grid-column: 1 / -1; }
+
+/* Slug preview */
+.slug-preview {
+  font-family: 'JetBrains Mono',monospace;
+  font-size: 15px; font-weight: 300;
+  color: var(--fg-muted);
+  letter-spacing: 0.02em;
+  margin-top: 6px;
+}
+
+/* ═══════════════════════════════════════════════════
+   KANJI PREVIEW CARD
+═══════════════════════════════════════════════════ */
+
+.kanji-preview-wrap {
+  margin-top: 8px;
+  display: flex; align-items: center; gap: 18px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  padding: 14px 18px;
+}
+
+.kanji-preview-glyph {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 3.2rem; font-weight: 200;
+  color: var(--fg); line-height: 1;
+  flex-shrink: 0; min-width: 60px;
+  text-align: center;
+}
+
+.kanji-preview-info { flex: 1; }
+.kanji-preview-name { font-family: 'Playfair Display',serif; font-size: 1.05rem; font-weight: 700; line-height: 1.2; }
+.kanji-preview-anni { font-family: 'EB Garamond',serif; font-size: 0.9rem; color: var(--fg-muted); letter-spacing: 0.05em; margin-top: 2px; }
+.kanji-preview-temi { font-family: 'EB Garamond',serif; font-style: italic; font-size: 0.9rem; color: var(--fg-soft); margin-top: 4px; }
+
+/* ═══════════════════════════════════════════════════
+   PREVIEW & OUTPUT
+═══════════════════════════════════════════════════ */
+
+.preview-panel {
+  border: 1px solid var(--border);
+  margin-top: 0;
+  overflow: hidden;
+}
+
+.preview-head {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  cursor: pointer; background: var(--panel-bg);
+  user-select: none; transition: background var(--tr);
+  border-bottom: 1px solid var(--border);
+}
+.preview-head:hover { background: rgba(26,20,16,0.04); }
+
+.preview-head-left { display: flex; align-items: center; gap: 13px; }
+.preview-num { font-family: 'Playfair Display',serif; font-style: italic; font-size: 16px; color: var(--blood); opacity: 0.8; }
+.preview-name { font-family: 'EB Garamond',serif; font-size: 15px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-soft); }
+.preview-chevron { font-size: 13px; color: var(--fg-muted); transition: transform 0.3s; }
+.preview-panel.open .preview-chevron { transform: rotate(180deg); }
+
+.preview-body { display: none; }
+.preview-panel.open .preview-body { display: block; }
+
+.preview-content {
+  font-family: 'JetBrains Mono',monospace;
+  font-size: 14px; font-weight: 300; line-height: 1.65;
+  color: var(--fg-soft);
+  padding: 22px;
+  white-space: pre-wrap; word-break: break-word;
+  max-height: 540px; overflow-y: auto;
+  background: var(--bg);
+}
+
+/* ═══════════════════════════════════════════════════
+   ACTION BAR
+═══════════════════════════════════════════════════ */
+
+.action-section {
+  padding: 40px 0 80px;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+
+.action-inner {
+  display: flex; align-items: center;
+  gap: 20px; flex-wrap: wrap;
+}
+
+.action-meta { flex: 1; min-width: 160px; }
+
+.filename-preview {
+  font-family: 'JetBrains Mono',monospace;
+  font-size: 17px; font-weight: 300;
+  color: var(--fg-muted); margin-bottom: 4px;
+  letter-spacing: 0.01em;
+}
+
+.stats-line {
+  font-family: 'EB Garamond',serif; font-size: 16px;
+  color: var(--fg-muted); letter-spacing: 0.06em;
+}
+
+.action-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ═══════════════════════════════════════════════════
+   TOAST & FOOTER
+═══════════════════════════════════════════════════ */
+
+#toast {
+  position: fixed; bottom: 28px; left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: var(--ink); color: var(--bg);
+  padding: 11px 22px;
+  font-family: 'EB Garamond',serif; font-size: 17px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 9999; white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+#app-footer { border-top: 1px solid var(--border); padding: 26px 0; margin-top: 0; }
+.footer-note { font-family: 'EB Garamond',serif; font-style: italic; font-size: 16px; color: var(--fg-muted); text-align: center; }
+
+/* Separatore sezione con indicatore gold per la bio */
+.section-badge {
+  font-family: 'EB Garamond',serif; font-size: 13px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold); border: 1px solid rgba(201,168,76,0.3);
+  padding: 3px 9px;
+  background: var(--gold-pale);
+}
+
+@media (max-width: 620px) {
+  .container { padding: 0 16px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .action-inner { flex-direction: column; align-items: flex-start; }
+  .kanji-preview-glyph { font-size: 2.4rem; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ HEADER ═══════════════════════ -->
+<header id="app-header">
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <span class="logo-kanji">著</span>
+        <div>
+          <div class="logo-title">Genera Autore .md</div>
+          <div class="logo-sub">東の声 · Narrativa Giapponese Classica · Astro</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <span class="autosave-pill" id="autosave-pill"></span>
+        <button class="btn btn-ghost btn-sm" id="btn-clear" title="Svuota tutto e ricomincia">↺ Nuovo</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="container">
+
+<!-- ══════════════════ SEZIONE I — IDENTITÀ ══════════ -->
+<section class="section" id="sec-identita">
+  <div class="section-head">
+    <div class="section-title-wrap">
+      <span class="section-num">I</span>
+      <span class="section-title">Identità dell'autore</span>
+    </div>
+    <span class="section-hint">Campi obbligatori per il sito</span>
+  </div>
+
+  <div class="form-grid">
+
+    <!-- Nome -->
+    <div class="field full">
+      <label>Nome autore <span class="optional">· obbligatorio · come compare nel sito</span></label>
+      <input type="text" id="f-name" placeholder="Ryūnosuke Akutagawa">
+      <div class="slug-preview" id="slug-preview"></div>
+    </div>
+
+    <!-- Kanji & Nazione -->
+    <div class="field">
+      <label>Kanji <span class="optional">· nome in giapponese</span></label>
+      <input type="text" id="f-kanji" placeholder="芥川龍之介" style="font-family:'Noto Serif JP',serif; font-size:18px;">
+    </div>
+    <div class="field">
+      <label>Nazione <span class="optional">· default: Giappone</span></label>
+      <input type="text" id="f-nazione" placeholder="Giappone" value="Giappone">
+    </div>
+
+    <!-- Anni di vita -->
+    <div class="field">
+      <label>Anni di vita <span class="optional">· formato libero</span></label>
+      <input type="text" id="f-anni" placeholder="1892–1927">
+    </div>
+
+    <!-- Anno nascita & Anno morte -->
+    <div class="field">
+      <label>Anno di nascita <span class="optional">· numerico</span></label>
+      <input type="number" id="f-born" placeholder="1892" min="1600" max="1990">
+    </div>
+
+    <!-- Temi principali -->
+    <div class="field full">
+      <label>Temi principali <span class="optional">· separati da · (punto medio) · appaiono nella card autore</span></label>
+      <input type="text" id="f-temi" placeholder="folklore · psicologia · ambiguità morale">
+    </div>
+
+    <!-- Foto -->
+    <div class="field full">
+      <label>Foto <span class="optional">· facoltativo · path in public/ (es. /autori/akutagawa.webp)</span></label>
+      <input type="text" id="f-foto" placeholder="/autori/akutagawa.webp">
+    </div>
+
+    <!-- isDraft -->
+    <div class="field full" style="margin-top: 4px;">
+      <label class="field-check">
+        <input type="checkbox" id="f-isDraft">
+        <span>isDraft — pubblica come bozza (non visibile in produzione)</span>
+      </label>
+    </div>
+
+  </div>
+
+  <!-- Anteprima card autore -->
+  <div class="kanji-preview-wrap" id="card-preview" style="margin-top: 24px;">
+    <div class="kanji-preview-glyph" id="prev-kanji">著</div>
+    <div class="kanji-preview-info">
+      <div class="kanji-preview-name" id="prev-name">— nessun autore —</div>
+      <div class="kanji-preview-anni" id="prev-anni"></div>
+      <div class="kanji-preview-temi" id="prev-temi"></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════════════ SEZIONE II — SEO ══════════════ -->
+<section class="section" id="sec-seo">
+  <div class="section-head">
+    <div class="section-title-wrap">
+      <span class="section-num">II</span>
+      <span class="section-title">SEO &amp; Metadati</span>
+    </div>
+    <span class="section-hint">Usati nel &lt;head&gt; della pagina autore</span>
+  </div>
+
+  <div class="form-grid">
+
+    <!-- Description -->
+    <div class="field full">
+      <label>Description <span class="optional">· max 160 caratteri · meta SEO</span></label>
+      <input type="text" id="f-description" maxlength="160" placeholder="Verrà generata automaticamente dall'excerpt se lasciata vuota">
+      <div class="char-count" id="desc-count">0 / 160</div>
+    </div>
+
+    <!-- Excerpt -->
+    <div class="field full">
+      <label>Excerpt <span class="optional">· frase breve mostrata nell'hero della pagina autore</span></label>
+      <input type="text" id="f-excerpt" placeholder="Una voce che brucia e si spegne nell'attimo stesso in cui illumina.">
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════ SEZIONE III — BIOGRAFIA ═══════ -->
+<section class="section" id="sec-bio">
+  <div class="section-head">
+    <div class="section-title-wrap">
+      <span class="section-num">III</span>
+      <span class="section-title">Biografia</span>
+    </div>
+    <span class="section-badge">Corpo del file .md</span>
+  </div>
+
+  <div class="field">
+    <label>Testo biografico <span class="optional">· facoltativo · Markdown · mostrato nella pagina autore</span></label>
+    <textarea id="f-bio" class="tall"
+      placeholder="Scrivi qui la biografia dell'autore in Markdown.
+
+Puoi usare paragrafi, **grassetto**, *corsivo*, ## Sottotitoli, ecc.
+
+Lascia vuoto se non hai ancora una biografia da pubblicare."></textarea>
+    <p class="field-note" id="bio-word-count" style="text-align:right;"></p>
+  </div>
+</section>
+
+<!-- ══════════════════ SEZIONE IV — ANTEPRIMA ════════ -->
+<section class="section" id="sec-preview" style="padding-bottom: 0;">
+  <div class="section-head">
+    <div class="section-title-wrap">
+      <span class="section-num">IV</span>
+      <span class="section-title">Anteprima Markdown</span>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="togglePreview()">Espandi / Chiudi</button>
+  </div>
+
+  <div class="preview-panel" id="preview-panel">
+    <div class="preview-head" onclick="togglePreview()">
+      <div class="preview-head-left">
+        <span class="preview-num">05</span>
+        <span class="preview-name">Frontmatter + Biografia · aggiornamento in tempo reale</span>
+      </div>
+      <span class="preview-chevron">▼</span>
+    </div>
+    <div class="preview-body">
+      <div class="preview-content" id="preview-content">
+        <span style="font-style:italic;opacity:0.5;">Inizia a compilare i campi per vedere l'anteprima…</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ AZIONI ═══════════════════════ -->
+<div class="action-section">
+  <div class="action-inner">
+    <div class="action-meta">
+      <div class="filename-preview" id="filename-preview">—</div>
+      <div class="stats-line" id="stats-line"></div>
+    </div>
+    <div class="action-btns">
+      <button class="btn btn-ghost" onclick="copyMarkdown()">⎘ Copia MD</button>
+      <button class="btn btn-primary" onclick="downloadMd()">↓ Scarica .md</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /container -->
+</main>
+
+<footer id="app-footer">
+  <div class="container">
+    <p class="footer-note">東の声 · Generatore Autori Markdown · Narrativa Giapponese Classica per Astro</p>
+  </div>
+</footer>
+
+<div id="toast"></div>
+
+<!-- ══════════════════ JAVASCRIPT ═══════════════════ -->
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────────────────
+   HELPERS
+───────────────────────────────────────────────────── */
+
+const $ = id => document.getElementById(id);
+const val = (id, fallback = '') => {
+  const el = $(id);
+  return el ? el.value : fallback;
+};
+const setVal = (id, value = '') => {
+  const el = $(id);
+  if (el) el.value = value;
+};
+const checked = (id, fallback = false) => {
+  const el = $(id);
+  return el ? el.checked : fallback;
+};
+const setChecked = (id, value = false) => {
+  const el = $(id);
+  if (el) el.checked = value;
+};
+
+let _toastTimer;
+function toast(msg, ms = 2800) {
+  const el = $('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), ms);
+}
+
+function slugify(text) {
+  return text.toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function buildFilename() {
+  const name = val('f-name').trim();
+  if (!name) return 'autore.md';
+  return slugify(name) + '.md';
+}
+
+function countWords(text) {
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+let _autosaveTimer;
+
+/* ─────────────────────────────────────────────────────
+   GENERA MARKDOWN
+───────────────────────────────────────────────────── */
+
+function generateMarkdown() {
+  const name      = val('f-name').trim();
+  const kanji     = val('f-kanji').trim();
+  const nazione   = val('f-nazione', 'Giappone').trim() || 'Giappone';
+  const anni      = val('f-anni').trim();
+  const born      = val('f-born').trim();
+  const temi      = val('f-temi').trim();
+  const foto      = val('f-foto').trim();
+  const isDraft   = checked('f-isDraft', false);
+  const desc      = val('f-description').trim();
+  const excerpt   = val('f-excerpt').trim();
+  const bio       = val('f-bio').trim();
+
+  /* Description fallback → excerpt */
+  const descFinal    = desc || excerpt || '';
+  const excerptFinal = excerpt || desc || '';
+
+  /* Frontmatter */
+  const fm = [];
+  fm.push('---');
+  fm.push(name    ? `name: "${name.replace(/"/g, "'")}"` : 'name: ""');
+  if (kanji)  fm.push(`kanji: "${kanji}"`);
+  if (anni)   fm.push(`anni: "${anni}"`);
+  if (born)   fm.push(`born: ${born}`);
+  fm.push(`nazione: "${nazione}"`);
+  if (temi)   fm.push(`temi: "${temi.replace(/"/g, "'")}"`);
+  if (foto)   fm.push(`foto: "${foto}"`);
+  fm.push(`isDraft: ${isDraft}`);
+  if (descFinal)    fm.push(`description: "${descFinal.replace(/"/g, "'")}"`);
+  if (excerptFinal) fm.push(`excerpt: "${excerptFinal.replace(/"/g, "'")}"`);
+  fm.push('---');
+
+  /* Corpo */
+  let body = fm.join('\n');
+  if (bio) {
+    body += '\n\n' + bio;
+  }
+
+  return body;
+}
+
+/* ─────────────────────────────────────────────────────
+   AGGIORNAMENTO UI
+───────────────────────────────────────────────────── */
+
+let _updateTimer;
+function scheduleUpdate() {
+  clearTimeout(_updateTimer);
+  _updateTimer = setTimeout(updateAll, 100);
+}
+
+function updateAll() {
+  const name   = val('f-name').trim();
+  const kanji  = val('f-kanji').trim();
+  const anni   = val('f-anni').trim();
+  const temi   = val('f-temi').trim();
+  const bio    = val('f-bio').trim();
+
+  /* Slug preview */
+  const slug = name ? slugify(name) : '';
+  $('slug-preview').textContent = slug ? slug + '.md' : '';
+
+  /* Filename */
+  $('filename-preview').textContent = buildFilename();
+
+  /* Kanji card preview */
+  $('prev-kanji').textContent = kanji || (name ? name.slice(0, 2).toUpperCase() : '著');
+  $('prev-name').textContent  = name  || '— nessun autore —';
+  $('prev-anni').textContent  = anni  || '';
+  $('prev-temi').textContent  = temi  || '';
+
+  /* Bio word count */
+  const wc = bio ? countWords(bio) : 0;
+  $('bio-word-count').textContent = wc > 0 ? `${wc.toLocaleString('it-IT')} parole` : '';
+
+  /* Description char count */
+  const desc = val('f-description');
+  const cnt  = $('desc-count');
+  cnt.textContent = `${desc.length} / 160`;
+  cnt.classList.toggle('warn', desc.length > 140);
+
+  /* Stats line */
+  const parts = [];
+  if (wc > 0) parts.push(`~${wc} parole bio`);
+  if (kanji)  parts.push(`kanji presente`);
+  $('stats-line').textContent = parts.join(' · ');
+
+  /* Preview markdown */
+  $('preview-content').textContent = generateMarkdown();
+
+  scheduleSaveDraft();
+}
+
+/* ─────────────────────────────────────────────────────
+   PREVIEW TOGGLE
+───────────────────────────────────────────────────── */
+
+function togglePreview() {
+  $('preview-panel').classList.toggle('open');
+}
+
+/* ─────────────────────────────────────────────────────
+   DOWNLOAD & COPY
+───────────────────────────────────────────────────── */
+
+function downloadMd() {
+  const md   = generateMarkdown();
+  const fn   = buildFilename();
+  const blob = new Blob([md], { type: 'text/markdown; charset=utf-8' });
+  const a    = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(blob), download: fn,
+  });
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast(`↓ Scaricato: ${fn}`);
+}
+
+function copyMarkdown() {
+  const md = generateMarkdown();
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(md).then(() => toast('⎘ Markdown copiato negli appunti'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = md;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('⎘ Markdown copiato');
+  }
+}
+
+/* ─────────────────────────────────────────────────────
+   AUTOSAVE / DRAFT  (localStorage)
+───────────────────────────────────────────────────── */
+
+function scheduleSaveDraft() {
+  clearTimeout(_autosaveTimer);
+  _autosaveTimer = setTimeout(saveDraft, 8000);
+}
+
+function saveDraft() {
+  const data = {
+    name:        val('f-name'),
+    kanji:       val('f-kanji'),
+    nazione:     val('f-nazione', 'Giappone'),
+    anni:        val('f-anni'),
+    born:        val('f-born'),
+    temi:        val('f-temi'),
+    foto:        val('f-foto'),
+    isDraft:     checked('f-isDraft', false),
+    description: val('f-description'),
+    excerpt:     val('f-excerpt'),
+    bio:         val('f-bio'),
+    savedAt:     Date.now(),
+  };
+
+  try {
+    localStorage.setItem('md_gen_autore_draft', JSON.stringify(data));
+    const pill = $('autosave-pill');
+    const t    = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    pill.textContent = `✓ salvato ${t}`;
+    pill.classList.add('ok');
+    setTimeout(() => pill.classList.remove('ok'), 3000);
+  } catch (e) {
+    console.warn('Autosave fallito:', e);
+  }
+}
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem('md_gen_autore_draft');
+    if (!raw) return;
+    const d = JSON.parse(raw);
+
+    if (d.name)        setVal('f-name', d.name);
+    if (d.kanji)       setVal('f-kanji', d.kanji);
+    if (d.nazione)     setVal('f-nazione', d.nazione);
+    if (d.anni)        setVal('f-anni', d.anni);
+    if (d.born)        setVal('f-born', d.born);
+    if (d.temi)        setVal('f-temi', d.temi);
+    if (d.foto)        setVal('f-foto', d.foto);
+    if (d.isDraft !== undefined) setChecked('f-isDraft', d.isDraft);
+    if (d.description) setVal('f-description', d.description);
+    if (d.excerpt)     setVal('f-excerpt', d.excerpt);
+    if (d.bio)         setVal('f-bio', d.bio);
+
+    if (d.savedAt) {
+      const t = new Date(d.savedAt).toLocaleString('it-IT', {
+        day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+      });
+      $('autosave-pill').textContent = `bozza del ${t}`;
+    }
+  } catch (e) {
+    console.warn('Caricamento bozza fallita:', e);
+  }
+}
+
+function clearAll() {
+  if (!confirm('Svuotare tutti i campi e ricominciare da zero?')) return;
+  localStorage.removeItem('md_gen_autore_draft');
+
+  setVal('f-name', '');
+  setVal('f-kanji', '');
+  setVal('f-nazione', 'Giappone');
+  setVal('f-anni', '');
+  setVal('f-born', '');
+  setVal('f-temi', '');
+  setVal('f-foto', '');
+  setChecked('f-isDraft', false);
+  setVal('f-description', '');
+  setVal('f-excerpt', '');
+  setVal('f-bio', '');
+
+  $('autosave-pill').textContent = '';
+  updateAll();
+  toast('↺ Tutto pulito');
+}
+
+/* ─────────────────────────────────────────────────────
+   INIT
+───────────────────────────────────────────────────── */
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadDraft();
+  updateAll();
+
+  /* Live update su tutti i campi */
+  document.querySelectorAll(
+    '#sec-identita input, #sec-identita select, ' +
+    '#sec-seo input, ' +
+    '#sec-bio textarea'
+  ).forEach(el => el.addEventListener('input', scheduleUpdate));
+
+  $('f-isDraft').addEventListener('change', scheduleUpdate);
+
+  /* Ctrl/Cmd + S → scarica */
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      downloadMd();
+    }
+  });
+
+  $('btn-clear').addEventListener('click', clearAll);
+
+  /* Apri preview di default */
+  $('preview-panel').classList.add('open');
+});
+</script>
+</body>
+</html>

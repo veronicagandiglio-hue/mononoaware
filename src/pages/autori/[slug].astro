@@ -1,0 +1,918 @@
+---
+// src/pages/autori/[slug].astro
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  // Sposta slugify qui dentro
+  function slugify(name: string): string {
+    return name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  const racconti   = await getCollection('racconti', ({ data }) => !data.isDraft);
+  const autoriColl = await getCollection('autori',   ({ data }) => !data.isDraft);
+
+ 
+
+  const nomiMap = new Map<string, typeof racconti>();
+  for (const r of racconti) {
+    const nome = r.data.author?.trim();
+    if (!nome) continue;
+    if (!nomiMap.has(nome)) nomiMap.set(nome, []);
+    nomiMap.get(nome)!.push(r);
+  }
+  // Autori con .md ma senza racconti ancora
+  for (const a of autoriColl) {
+    if (!nomiMap.has(a.data.name)) nomiMap.set(a.data.name, []);
+  }
+
+  return [...nomiMap.entries()].map(([nome, storie]) => {
+    const slug  = slugify(nome);
+    const entry = autoriColl.find(a => a.data.name === nome) ?? null;
+    return {
+      params: { slug },
+      props:  { nome, entry, storie },
+    };
+  });
+}
+
+const { nome, entry, storie } = Astro.props;
+
+const AUTHOR_META: Record<string, { kanji: string; anni: string; temi: string; foto: string }> = {
+  'Osamu Dazai':           { kanji: '太宰治',       anni: '1909–1948', temi: 'alienazione · ironia tragica · autodistruzione',  foto: '' },
+  'Ryūnosuke Akutagawa':   { kanji: '芥川龍之介',   anni: '1892–1927', temi: 'folklore · psicologia · ambiguità morale',         foto: '' },
+  'Yasunari Kawabata':     { kanji: '川端康成',     anni: '1899–1972', temi: 'malinconia · bellezza transitoria · solitudine',   foto: '' },
+  "Jun'ichirō Tanizaki":   { kanji: '谷崎潤一郎',   anni: '1886–1965', temi: 'ossessione · estetica · sensualità oscura',        foto: '' },
+  'Natsume Soseki':        { kanji: '夏目漱石',     anni: '1867–1916', temi: 'identità · modernità · isolamento interiore',      foto: '' },
+  'Lafcadio Hearn':        { kanji: '小泉八雲',     anni: '1850–1904', temi: 'fantasmi · folklore · meraviglia notturna',        foto: '' },
+  'Edogawa Ranpo':         { kanji: '江戸川乱歩',   anni: '1894–1965', temi: 'giallo · ossessione · grotesco',                   foto: '' },
+  'Yukio Mishima':         { kanji: '三島由紀夫',   anni: '1925–1970', temi: 'bellezza · morte · tradizione infranta',           foto: '' },
+  'Izumi Kyoka':           { kanji: '泉鏡花',       anni: '1873–1939', temi: 'soprannaturale · romanticismo · eros',             foto: '' },
+  'Doppo Kunikida':        { kanji: '国木田独歩',   anni: '1871–1908', temi: 'naturalismo · solitudine · natura aspra',          foto: '' },
+  'Toson Shimazaki':       { kanji: '島崎藤村',     anni: '1872–1943', temi: 'naturalismo · famiglia · transizione epocale',    foto: '' },
+  'Koyo Ozaki':            { kanji: '尾崎紅葉',     anni: '1867–1903', temi: "amore · melodramma · fine di un'epoca",            foto: '' },
+  'Saisei Muro':           { kanji: '室生犀星',     anni: '1889–1962', temi: 'lirismo · infanzia · malinconia',                  foto: '' },
+  'Kan Kikuchi':           { kanji: '菊池寛',       anni: '1888–1948', temi: 'dramma · ironia · società borghese',               foto: '' },
+  'Kafu Nagai':            { kanji: '永井荷風',     anni: '1879–1959', temi: 'nostalgia · erotismo · Tokyo perduta',             foto: '' },
+  'Mori Ogai':             { kanji: '森鷗外',       anni: '1862–1922', temi: 'dualismo · storia · dovere e libertà',             foto: '' },
+  'Ango Sakaguchi':        { kanji: '坂口安吾',     anni: '1906–1955', temi: 'decadenza · nichilismo · post-guerra',             foto: '' },
+  'Fumiko Hayashi':        { kanji: '林芙美子',     anni: '1903–1951', temi: 'vagabondaggio · femminile · povertà dignitosa',    foto: '' },
+  'Naoya Shiga':           { kanji: '志賀直哉',     anni: '1883–1971', temi: 'introspezione · natura · autobiografia',           foto: '' },
+  'Saneatsu Mushanokoji':  { kanji: '武者小路実篤',  anni: '1885–1976', temi: 'umanesimo · ideale · comunità',                   foto: '' },
+  'Riichi Yokomitsu':      { kanji: '横光利一',     anni: '1898–1947', temi: 'sensazionismo · modernismo · velocità',            foto: '' },
+  'Mokichi Saito':         { kanji: '斎藤茂吉',     anni: '1882–1953', temi: 'tanka · morte · amore filiale',                   foto: '' },
+  'Mimei Ogawa':           { kanji: '小川未明',     anni: '1882–1961', temi: 'fiabe · malinconia infantile · mare',              foto: '' },
+  'Kajii Motojirou':       { kanji: '梶井基次郎',   anni: '1901–1932', temi: 'malattia · luce · frammento lirico',               foto: '' },
+  'Fumiko Enchi':          { kanji: '円地文子',     anni: '1905–1986', temi: 'femminile · vendetta · eros represso',             foto: '' },
+  'Aya Koda':              { kanji: '幸田文',       anni: '1904–1990', temi: 'natura · famiglia · raffinatezza',                 foto: '' },
+};
+
+const d       = entry?.data ?? {};
+const meta    = AUTHOR_META[nome];
+const kanji   = d.kanji   ?? meta?.kanji ?? '';
+const anni    = d.anni    ?? meta?.anni  ?? '—';
+const temi    = d.temi    ?? meta?.temi  ?? '';
+const foto    = d.foto    ?? meta?.foto  ?? '';
+const excerpt = d.excerpt ?? '';
+
+const storieOrdinate = [...storie].sort(
+  (a, b) => (a.data.yearOriginal ?? 0) - (b.data.yearOriginal ?? 0)
+);
+
+const catCount: Record<string, number> = {};
+for (const r of storie) {
+  const c = r.data.category ?? 'Altro';
+  catCount[c] = (catCount[c] ?? 0) + 1;
+}
+const catPrincipale = Object.entries(catCount).sort((a, b) => b[1] - a[1])[0]?.[0] ?? '';
+
+const iniziale = nome[0]?.toUpperCase() ?? '?';
+---
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{nome} — 東の声</title>
+  <meta name="description" content={excerpt || `Racconti e biografia di ${nome} nella narrativa giapponese classica.`} />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Noto+Serif+JP:wght@200;300;400;700&family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:          #0d0c0a;
+      --paper:        #f5f0e8;
+      --paper-dark:   #ede7d9;
+      --red:          #b5271b;
+      --gold:         #c9a84c;
+      --mist:         #8a8278;
+      --mist-light:   #b8b2aa;
+      --border:       rgba(13,12,10,0.11);
+      --hero-bg:      #0b0906;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-serif:   'DM Serif Display', serif;
+      --font-body:    'EB Garamond', serif;
+      --font-jp:      'Noto Serif JP', serif;
+      --font-prose:   'Cormorant Garamond', serif;
+      --tr: 0.3s ease;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.028;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ─── CURSOR ──────────────────────────────────────────────── */
+    .cursor {
+      width: 8px; height: 8px;
+      background: var(--red);
+      border-radius: 50%;
+      position: fixed; pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      transition: transform 0.12s ease;
+    }
+    .cursor-ring {
+      width: 32px; height: 32px;
+      border: 1px solid rgba(181,39,27,0.38);
+      border-radius: 50%;
+      position: fixed; pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: border-color 0.3s;
+    }
+
+    /* ─── NAVIGAZIONE ─────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 500;
+      padding: 1.2rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.4s, border-color 0.4s;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(11,9,6,0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom-color: rgba(255,255,255,0.06);
+    }
+    nav.light {
+      background: rgba(245,240,232,0.96);
+      backdrop-filter: blur(12px);
+      border-bottom-color: var(--border);
+    }
+    .nav-logo {
+      font-family: var(--font-jp);
+      font-size: 1.2rem;
+      font-weight: 300;
+      color: rgba(245,240,232,0.88);
+      text-decoration: none;
+      letter-spacing: 0.12em;
+      transition: color var(--tr);
+    }
+    nav.light .nav-logo { color: var(--ink); }
+    .nav-links {
+      display: flex; gap: 2.5rem; list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.78rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.5);
+      text-decoration: none;
+      transition: color 0.22s;
+    }
+    nav.light .nav-links a { color: var(--ink); opacity: 0.55; }
+    .nav-links a:hover { color: rgba(245,240,232,0.95); }
+    nav.light .nav-links a:hover { opacity: 1; color: var(--red); }
+    .nav-back {
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.45);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: color var(--tr);
+    }
+    .nav-back:hover { color: var(--red); }
+    nav.light .nav-back { color: var(--mist); }
+    nav.light .nav-back:hover { color: var(--red); }
+
+    /* ─── HERO AUTORE ─────────────────────────────────────────── */
+    .author-hero {
+      position: relative;
+      min-height: 60svh;
+      background: var(--hero-bg);
+      display: flex;
+      align-items: center;
+      padding: 4.5rem 7vw 4.5rem;
+      overflow: hidden;
+    }
+
+    #hero-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero-kanji-ghost {
+      position: absolute;
+      top: 50%; right: 4vw;
+      transform: translateY(-50%);
+      font-family: var(--font-jp);
+      font-size: clamp(12rem, 25vw, 24rem);
+      font-weight: 200;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(245,240,232,0.04);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+      z-index: 1;
+    }
+
+    .hero-veil {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 65%;
+      background: linear-gradient(to top, rgba(11,9,6,0.96) 0%, rgba(11,9,6,0.5) 55%, transparent 100%);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 270px;
+      gap: 4rem;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 10;
+      align-items: center;
+    }
+
+    .hero-left {
+      max-width: 720px;
+    }
+
+    .hero-name {
+      font-family: var(--font-serif);
+      font-size: clamp(3rem, 6.2vw, 5.8rem);
+      font-weight: 400;
+      line-height: 0.95;
+      letter-spacing: -0.022em;
+      color: var(--paper);
+      margin-bottom: 1.5rem;
+    }
+    .hero-name em { font-style: italic; color: var(--red); }
+
+    .hero-excerpt {
+      font-family: var(--font-prose);
+      font-style: italic;
+      font-size: clamp(1.1rem, 2vw, 1.35rem);
+      line-height: 1.58;
+      color: rgba(245,240,232,0.58);
+      max-width: 560px;
+      padding-left: 1.2rem;
+      border-left: 2px solid rgba(181,39,27,0.35);
+      margin-bottom: 2.2rem;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.75);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(245,240,232,0.18);
+      padding-bottom: 0.25rem;
+      transition: color var(--tr), border-color var(--tr);
+    }
+    .hero-cta:hover { color: var(--red); border-color: rgba(181,39,27,0.4); }
+    .cta-arrow { animation: bounce 2s ease-in-out infinite; }
+    @keyframes bounce {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(5px); }
+    }
+
+    /* ─── SIDEBAR SCHEDA NELL'HERO ───────────────────────────── */
+    .hero-right {
+      position: relative;
+      z-index: 15;
+    }
+    .hero-card {
+      background: rgba(245, 240, 232, 0.03);
+      border: 1px solid rgba(245, 240, 232, 0.08);
+      padding: 1.3rem;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      width: 100%;
+    }
+    .hero-card-foto {
+      width: 100%;
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      border: 1px solid rgba(245, 240, 232, 0.08);
+      margin-bottom: 1.2rem;
+    }
+    .hero-card-foto img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      filter: sepia(25%) contrast(0.92) brightness(0.85);
+      transition: filter 0.4s ease, transform 0.5s ease;
+    }
+    .hero-card-foto img:hover {
+      filter: sepia(10%) contrast(1) brightness(0.95);
+      transform: scale(1.02);
+    }
+    .hero-card-avatar {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: rgba(245, 240, 232, 0.02);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.2rem;
+      border: 1px solid rgba(245, 240, 232, 0.08);
+    }
+    .hero-card-avatar-kanji {
+      font-family: var(--font-jp);
+      font-size: clamp(3rem, 5vw, 3.8rem);
+      font-weight: 200;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(245, 240, 232, 0.15);
+      line-height: 1;
+    }
+    .hero-data-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .hero-data-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid rgba(245, 240, 232, 0.08);
+    }
+    .hero-data-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .hdr-label {
+      font-size: 0.55rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(245, 240, 232, 0.3);
+    }
+    .hdr-value {
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: rgba(245, 240, 232, 0.85);
+      line-height: 1.35;
+    }
+    .hdr-value.temi {
+      font-style: italic;
+      color: var(--gold);
+      font-size: 0.82rem;
+    }
+
+
+    /* ─── SEZIONE RACCONTI ──────────────────────────────────── */
+    .racconti-section {
+      background: var(--ink);
+      padding: 5.5rem 0 7rem;
+    }
+
+    .racconti-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2.5rem;
+    }
+
+    .racconti-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 3.5rem;
+      padding-bottom: 1.8rem;
+      border-bottom: 1px solid rgba(245,240,232,0.07);
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .racconti-eyebrow {
+      font-size: 0.6rem;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.28);
+      display: block;
+      margin-bottom: 0.9rem;
+    }
+    .racconti-title {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 4.5vw, 3.8rem);
+      font-weight: 400;
+      line-height: 0.93;
+      letter-spacing: -0.02em;
+      color: var(--paper);
+    }
+    .racconti-title em { font-style: italic; color: var(--red); }
+    .racconti-count-badge {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 5vw, 4.5rem);
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(245,240,232,0.14);
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+    }
+
+    .racconti-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .racconto-item {
+      display: grid;
+      grid-template-columns: 80px 1fr auto;
+      gap: 1.6rem;
+      align-items: start;
+      padding: 2.2rem 0;
+      border-bottom: 1px solid rgba(245,240,232,0.06);
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+    }
+    .racconto-item::before {
+      content: '';
+      position: absolute;
+      left: -2.5rem; right: -2.5rem;
+      top: 0; bottom: 0;
+      background: rgba(245,240,232,0.025);
+      opacity: 0;
+      transition: opacity var(--tr);
+      pointer-events: none;
+    }
+    .racconto-item:hover::before { opacity: 1; }
+    .racconto-item:first-child { padding-top: 0; }
+
+    .ri-year {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      line-height: 1;
+      color: rgba(245,240,232,0.2);
+      padding-top: 0.15rem;
+      transition: color var(--tr);
+      letter-spacing: 0.04em;
+    }
+    .racconto-item:hover .ri-year { color: var(--red); }
+
+    .ri-cat {
+      font-size: 0.58rem;
+      letter-spacing: 0.34em;
+      text-transform: uppercase;
+      color: var(--red);
+      opacity: 0.8;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .ri-title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.1rem, 2vw, 1.42rem);
+      font-weight: 400;
+      color: var(--paper);
+      line-height: 1.18;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.6rem;
+      transition: color var(--tr);
+    }
+    .racconto-item:hover .ri-title { color: var(--red); }
+    .ri-excerpt {
+      font-family: var(--font-prose);
+      font-style: italic;
+      font-size: 0.92rem;
+      color: rgba(245,240,232,0.35);
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .ri-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.5rem;
+      padding-top: 0.15rem;
+    }
+    .ri-time {
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.22);
+    }
+    .ri-arrow {
+      font-size: 0.9rem;
+      color: rgba(245,240,232,0.18);
+      transform: translateX(-4px);
+      opacity: 0;
+      transition: opacity var(--tr), transform var(--tr), color var(--tr);
+    }
+    .racconto-item:hover .ri-arrow {
+      opacity: 1;
+      transform: translateX(0);
+      color: var(--red);
+    }
+
+    .no-racconti {
+      font-family: var(--font-prose);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: rgba(245,240,232,0.25);
+      padding: 2rem 0;
+    }
+
+    /* ─── ALTRI AUTORI ───────────────────────────────────────── */
+    .altri-section {
+      background: var(--paper-dark);
+      padding: 5rem 0 6rem;
+      border-top: 1px solid var(--border);
+    }
+    .altri-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2.5rem;
+    }
+    .altri-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: var(--mist-light);
+      display: block;
+      margin-bottom: 3rem;
+    }
+    .altri-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-family: var(--font-serif);
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      color: var(--ink);
+      text-decoration: none;
+      transition: color var(--tr);
+    }
+    .altri-link:hover { color: var(--red); }
+
+    /      /* ─── RESPONSIVE ─────────────────────────────────────────── */
+      @media (max-width: 900px) {
+        .author-hero {
+          padding: 7rem 1.5rem 3.5rem;
+          min-height: auto;
+        }
+        .hero-grid {
+          grid-template-columns: 1fr;
+          gap: 2.5rem;
+        }
+        .hero-right {
+          max-width: 320px;
+          width: 100%;
+          margin: 0 auto;
+        }
+        .racconto-item { grid-template-columns: 60px 1fr auto; gap: 1rem; }
+      }
+      @media (max-width: 760px) {
+        nav { padding: 1rem 1.2rem; }
+        .nav-links { display: none; }
+        .author-hero { padding: 6.5rem 1.5rem 3.5rem; }
+        .hero-name { font-size: clamp(2.5rem, 9vw, 3.4rem); }
+        .racconti-inner { padding: 0 1.5rem; }
+        .racconto-item { grid-template-columns: 1fr auto; }
+        .ri-year { display: none; }
+        .altri-inner { padding: 0 1.5rem; }
+        footer { flex-direction: column; gap: 2rem; text-align: center; }
+        .footer-links-sm { flex-wrap: wrap; justify-content: center; }
+      }�───────────────────────────── */
+    @media (max-width: 900px) {
+      .author-hero {
+        padding: 7rem 1.5rem 4rem;
+        min-height: auto;
+      }
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 3.5rem;
+      }
+      .hero-right {
+        max-width: 420px;
+        width: 100%;
+        margin: 0 auto;
+      }
+      .racconto-item { grid-template-columns: 60px 1fr auto; gap: 1rem; }
+    }
+    @media (max-width: 760px) {
+      nav { padding: 1rem 1.2rem; }
+      .nav-links { display: none; }
+      .author-hero { padding: 0 1.5rem 7vh; }
+      .hero-name { font-size: clamp(2.8rem, 11vw, 4rem); }
+      .ticker-wrap { display: none; }
+      .racconti-inner { padding: 0 1.5rem; }
+      .racconto-item { grid-template-columns: 1fr auto; }
+      .ri-year { display: none; }
+      .altri-inner { padding: 0 1.5rem; }
+      footer { flex-direction: column; gap: 2rem; text-align: center; }
+      .footer-links-sm { flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <nav id="navbar">
+    <a href="/" class="nav-logo">東の声</a>
+    <ul class="nav-links">
+      <li><a href="/racconti">Racconti</a></li>
+      <li><a href="/categorie">Categorie</a></li>
+      <li><a href="/autori" class="active">Autori</a></li>
+      <li><a href="/traduttore">Chi traduce</a></li>
+    </ul>
+    <a href="/autori" class="nav-back">← Tutti gli autori</a>
+  </nav>
+
+  <!-- ══════════════════ HERO ═════════════════════════════════ -->
+  <section class="author-hero" id="author-hero">
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-veil"></div>
+
+    {kanji && <span class="hero-kanji-ghost" aria-hidden="true">{kanji}</span>}
+
+    <div class="hero-grid">
+      <div class="hero-left">
+        <h1 class="hero-name">{nome}</h1>
+
+        {excerpt && (
+          <p class="hero-excerpt">{excerpt}</p>
+        )}
+
+        <a href="#racconti" class="hero-cta">
+          Esplora i racconti <span class="cta-arrow">↓</span>
+        </a>
+      </div>
+
+      <div class="hero-right">
+        <div class="hero-card">
+          {foto ? (
+            <div class="hero-card-foto">
+              <img src={foto} alt={`Ritratto di ${nome}`} loading="lazy" />
+            </div>
+          ) : (
+            <div class="hero-card-avatar">
+              <span class="hero-card-avatar-kanji">{kanji || iniziale}</span>
+            </div>
+          )}
+
+          <div class="hero-data-list">
+            {anni !== '—' && (
+              <div class="hero-data-row">
+                <span class="hdr-label">Anni di nascita e morte</span>
+                <span class="hdr-value">{anni}</span>
+              </div>
+            )}
+            {temi && (
+              <div class="hero-data-row">
+                <span class="hdr-label">Temi</span>
+                <span class="hdr-value temi">{temi}</span>
+              </div>
+            )}
+            <div class="hero-data-row">
+              <span class="hdr-label">Racconti in archivio</span>
+              <span class="hdr-value">{storie.length}</span>
+            </div>
+            {catPrincipale && (
+              <div class="hero-data-row">
+                <span class="hdr-label">Categoria prevalente</span>
+                <span class="hdr-value">{catPrincipale}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ RACCONTI ════════════════════════════ -->
+  <section class="racconti-section" id="racconti">
+    <div class="racconti-inner">
+      <div class="racconti-header">
+        <div>
+          <span class="racconti-eyebrow">Archivio</span>
+          {/* FIX #4 — usa Fragment per renderizzare <em> come HTML, non come stringa */}
+          <h2 class="racconti-title">
+            {storie.length === 1
+              ? <Fragment>Il <em>racconto</em></Fragment>
+              : <Fragment>I <em>racconti</em></Fragment>
+            }
+          </h2>
+        </div>
+        <span class="racconti-count-badge">{storie.length}</span>
+      </div>
+
+      {storieOrdinate.length > 0
+        ? (
+          <div class="racconti-list">
+            {storieOrdinate.map(r => (
+              <a class="racconto-item" href={`/racconti/${r.id}`}>
+                <span class="ri-year">{r.data.yearOriginal ?? '—'}</span>
+                <div class="ri-body">
+                  <span class="ri-cat">{r.data.category}</span>
+                  <h3 class="ri-title">{r.data.title}</h3>
+                  <p class="ri-excerpt">{r.data.excerpt ?? r.data.description}</p>
+                </div>
+                <div class="ri-meta">
+                  {r.data.readTime && <span class="ri-time">{r.data.readTime} min</span>}
+                  <span class="ri-arrow">→</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        )
+        : <p class="no-racconti">Nessun racconto ancora pubblicato per questo autore.</p>
+      }
+    </div>
+  </section>
+
+  <!-- ══════════════════ TORNA AGLI AUTORI ═══════════════════ -->
+  <section class="altri-section">
+    <div class="altri-inner">
+      <span class="altri-label">Esplora l'archivio</span>
+      <div>
+        <a href="/autori" class="altri-link">← Tutti gli autori</a>
+      </div>
+      <div style="margin-top:1.2rem;">
+        <a href="/racconti" class="altri-link">Tutti i racconti →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <a href="/" class="footer-logo">東の声</a>
+    <ul class="footer-links-sm">
+      <li><a href="/racconti">Tutti i racconti</a></li>
+      <li><a href="/categorie">Categorie</a></li>
+      <li><a href="/autori">Autori</a></li>
+      <li><a href="/traduttore">Chi traduce</a></li>
+    </ul>
+  </footer>
+
+
+
+  <script>
+  (function () {
+
+    /* ── CURSOR ─────────────────────────────────────────────── */
+    const cursor = document.getElementById('cursor');
+    const ring   = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      if (cursor) { cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; }
+    });
+    (function animRing() {
+      rx += (mx - rx) * 0.11;
+      ry += (my - ry) * 0.11;
+      if (ring) { ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; }
+      requestAnimationFrame(animRing);
+    })();
+
+    /* ── NAV: stile chiaro/scuro al cambio sezione ──────────── */
+    const navbar  = document.getElementById('navbar');
+    const heroEl  = document.getElementById('author-hero');
+
+    if (heroEl && navbar) {
+      new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          navbar.classList.toggle('light', !e.isIntersecting);
+        });
+      }, { threshold: 0 }).observe(heroEl);
+    }
+
+    /* ── HERO CANVAS: foschia + pioggia ─────────────────────── */
+    const c = document.getElementById('hero-canvas');
+    if (c instanceof HTMLCanvasElement) {
+      const ctx = c.getContext('2d');
+      if (ctx) {
+        function resize() {
+          c.width  = c.parentElement?.offsetWidth  ?? window.innerWidth;
+          c.height = c.parentElement?.offsetHeight ?? window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        const rain = [];
+        function initRain() {
+          rain.length = 0;
+          for (let i = 0; i < 55; i++) {
+            rain.push({
+              x:   Math.random() * c.width,
+              y:   Math.random() * c.height,
+              len: 14 + Math.random() * 24,
+              vy:  5  + Math.random() * 5,
+              a:   0.025 + Math.random() * 0.065,
+            });
+          }
+        }
+        initRain();
+        window.addEventListener('resize', initRain);
+
+        function draw() {
+          requestAnimationFrame(draw);
+          const w = c.width, h = c.height;
+          ctx.clearRect(0, 0, w, h);
+
+          const bg = ctx.createRadialGradient(w * 0.38, h * 0.28, 0, w * 0.38, h * 0.28, h * 0.9);
+          bg.addColorStop(0,   'rgba(38,25,18,0.48)');
+          bg.addColorStop(0.6, 'rgba(10,7,5,0.68)');
+          bg.addColorStop(1,   'rgba(5,3,2,0.88)');
+          ctx.fillStyle = bg;
+          ctx.fillRect(0, 0, w, h);
+
+          rain.forEach(p => {
+            p.y += p.vy;
+            p.x -= 0.14 * p.vy;
+            if (p.y > h + 30) { p.y = -30; p.x = Math.random() * (w + 60); }
+            if (p.x < -10)     p.x = w + 10;
+            ctx.globalAlpha = p.a;
+            ctx.strokeStyle = 'rgb(125,142,178)';
+            ctx.lineWidth   = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p.x - 0.14 * p.len, p.y + p.len);
+            ctx.stroke();
+          });
+          ctx.globalAlpha = 1;
+        }
+        draw();
+      }
+    }
+
+
+
+    /* ── REVEAL STAGGERATO racconto-item ────────────────────── */
+    const items = document.querySelectorAll('.racconto-item');
+    const revObs = new IntersectionObserver((entries, obs) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const list = Array.from(document.querySelectorAll('.racconto-item'));
+        const idx  = list.indexOf(e.target);
+        setTimeout(() => {
+          e.target.style.opacity   = '1';
+          e.target.style.transform = 'translateY(0)';
+        }, Math.min(idx, 8) * 60);
+        obs.unobserve(e.target);
+      });
+    }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+
+    items.forEach(item => {
+      item.style.opacity    = '0';
+      item.style.transform  = 'translateY(16px)';
+      item.style.transition = 'opacity 0.55s ease, transform 0.55s cubic-bezier(0.16,1,0.3,1)';
+      revObs.observe(item);
+    });
+
+  })();
+  </script>
+</body>
+</html>
