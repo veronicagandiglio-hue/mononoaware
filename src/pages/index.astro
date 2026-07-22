@@ -31,7 +31,7 @@ const categoryMetadata = {
     evocativa: 'Dove il mondo visibile finisce, le storie cominciano davvero.',
     scene: 'moon',
     cta: 'Scopri tutti i racconti di questa atmosfera',
-    href: '/racconti?categoria=folklore'
+    href: `${import.meta.env.BASE_URL}racconti?categoria=folklore`
   },
   romanzo: {
     eyebrow: "Romanzo dell'Io",
@@ -39,7 +39,7 @@ const categoryMetadata = {
     evocativa: 'Confessioni, vergogna, desideri e malinconie. La malinconia come lingua madre.',
     scene: 'rain',
     cta: 'Esplora tutti i racconti di questa voce',
-    href: '/racconti?categoria=romanzo'
+    href: `${import.meta.env.BASE_URL}racconti?categoria=romanzo`
   },
   modernismo: {
     eyebrow: 'Modernismo',
@@ -47,7 +47,7 @@ const categoryMetadata = {
     evocativa: 'Città immense, vite smarrite. Il mondo cambia più in fretta delle persone.',
     scene: 'city',
     cta: 'Entra nel labirinto di questi racconti',
-    href: '/racconti?categoria=modernismo'
+    href: `${import.meta.env.BASE_URL}racconti?categoria=modernismo`
   },
   naturalismo: {
     eyebrow: 'Naturalismo',
@@ -55,7 +55,7 @@ const categoryMetadata = {
     evocativa: 'Fame, inverno, desideri troppo grandi per vite troppo piccole.',
     scene: 'branch',
     cta: 'Leggi tutti i racconti di questa terra',
-    href: '/racconti?categoria=naturalismo'
+    href: `${import.meta.env.BASE_URL}racconti?categoria=naturalismo`
   },
   eroguro: {
     eyebrow: 'Ero-Guro & Giallo',
@@ -63,7 +63,7 @@ const categoryMetadata = {
     evocativa: 'Desiderio, ossessione e il fascino dell\'irreparabile.',
     scene: 'lantern',
     cta: 'Attraversa l\'ombra di questi racconti',
-    href: '/racconti?categoria=eroguro'
+    href: `${import.meta.env.BASE_URL}racconti?categoria=eroguro`
   }
 };
 
@@ -75,7 +75,7 @@ Object.entries(categoryMetadata).forEach(([key, meta]) => {
       titolo: r.data.title,
       teaser: r.data.excerpt || r.data.description,
       minuti: r.data.readTime || 6,
-      slug: `/racconti/${r.id}`
+      slug: `${import.meta.env.BASE_URL}racconti/${r.id}`
     }));
 
   dynamicCatData[key] = {
@@ -2440,12 +2440,12 @@ h1 .word span {
       const delay = (0.05 + index * 0.07).toFixed(2) + 's';
 
       return (
-        <a class="ur-card ur-visible" href={`/racconti/${racconto.id}`} style={`transition-delay:${delay}`} key={racconto.id}>
+        <a class="ur-card ur-visible" href={`${import.meta.env.BASE_URL}racconti/${racconto.id}`} style={`transition-delay:${delay}`} key={racconto.id}>
           <div class="ur-card-art" style={`height:${cardHeight}`}>
             {racconto.data.heroImage ? (
               <img 
                 class="ur-card-img" 
-                src={racconto.data.heroImage.startsWith('/') ? racconto.data.heroImage : `/${racconto.data.heroImage}`} 
+                src={`${import.meta.env.BASE_URL}${racconto.data.heroImage.replace(/^\//, '')}`} 
                 alt={racconto.data.title}
                 loading="lazy"
               />
