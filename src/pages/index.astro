@@ -31,7 +31,7 @@ const categoryMetadata = {
     evocativa: 'Dove il mondo visibile finisce, le storie cominciano davvero.',
     scene: 'moon',
     cta: 'Scopri tutti i racconti di questa atmosfera',
-    href: `${import.meta.env.BASE_URL}racconti?categoria=folklore`
+    href: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/racconti?categoria=folklore`
   },
   romanzo: {
     eyebrow: "Romanzo dell'Io",
@@ -39,7 +39,7 @@ const categoryMetadata = {
     evocativa: 'Confessioni, vergogna, desideri e malinconie. La malinconia come lingua madre.',
     scene: 'rain',
     cta: 'Esplora tutti i racconti di questa voce',
-    href: `${import.meta.env.BASE_URL}racconti?categoria=romanzo`
+    href: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/racconti?categoria=romanzo`
   },
   modernismo: {
     eyebrow: 'Modernismo',
@@ -47,7 +47,7 @@ const categoryMetadata = {
     evocativa: 'Città immense, vite smarrite. Il mondo cambia più in fretta delle persone.',
     scene: 'city',
     cta: 'Entra nel labirinto di questi racconti',
-    href: `${import.meta.env.BASE_URL}racconti?categoria=modernismo`
+    href: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/racconti?categoria=modernismo`
   },
   naturalismo: {
     eyebrow: 'Naturalismo',
@@ -55,7 +55,7 @@ const categoryMetadata = {
     evocativa: 'Fame, inverno, desideri troppo grandi per vite troppo piccole.',
     scene: 'branch',
     cta: 'Leggi tutti i racconti di questa terra',
-    href: `${import.meta.env.BASE_URL}racconti?categoria=naturalismo`
+    href: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/racconti?categoria=naturalismo`
   },
   eroguro: {
     eyebrow: 'Ero-Guro & Giallo',
@@ -63,7 +63,7 @@ const categoryMetadata = {
     evocativa: 'Desiderio, ossessione e il fascino dell\'irreparabile.',
     scene: 'lantern',
     cta: 'Attraversa l\'ombra di questi racconti',
-    href: `${import.meta.env.BASE_URL}racconti?categoria=eroguro`
+    href: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/racconti?categoria=eroguro`
   }
 };
 
@@ -75,7 +75,7 @@ Object.entries(categoryMetadata).forEach(([key, meta]) => {
       titolo: r.data.title,
       teaser: r.data.excerpt || r.data.description,
       minuti: r.data.readTime || 6,
-      slug: `${import.meta.env.BASE_URL}racconti/${r.id}`
+      slug: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/racconti/${r.id}`
     }));
 
   dynamicCatData[key] = {
@@ -2257,7 +2257,7 @@ h1 .word span {
     <!-- 1 · Folklore e Fantasmi -->
     <button class="atm-card" data-scene="moon" data-cat="folklore" type="button">
       <div class="atm-scene">
-        <img class="atm-scene-img" src={`${import.meta.env.BASE_URL}folklore.png`} alt="Folklore e Fantasmi" loading="lazy">
+        <img class="atm-scene-img" src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/folklore.png`} alt="Folklore e Fantasmi" loading="lazy">
         <canvas class="atm-ink-canvas"></canvas>
       </div>
       <div class="atm-info">
@@ -2268,7 +2268,7 @@ h1 .word span {
     <!-- 2 · Romanzo dell'Io -->
     <button class="atm-card" data-scene="rain" data-cat="romanzo" type="button">
       <div class="atm-scene">
-        <img class="atm-scene-img" src={`${import.meta.env.BASE_URL}romanzo-dellio.png`} alt="Romanzo dell'Io" loading="lazy">
+        <img class="atm-scene-img" src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/romanzo-dellio.png`} alt="Romanzo dell'Io" loading="lazy">
         <canvas class="atm-ink-canvas"></canvas>
       </div>
       <div class="atm-info">
@@ -2279,7 +2279,7 @@ h1 .word span {
     <!-- 3 · Modernismo -->
     <button class="atm-card" data-scene="city" data-cat="modernismo" type="button">
       <div class="atm-scene">
-        <img class="atm-scene-img" src={`${import.meta.env.BASE_URL}modernismo.png`} alt="Modernismo" loading="lazy">
+        <img class="atm-scene-img" src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/modernismo.png`} alt="Modernismo" loading="lazy">
         <canvas class="atm-ink-canvas"></canvas>
       </div>
       <div class="atm-info">
@@ -2290,7 +2290,7 @@ h1 .word span {
     <!-- 4 · Naturalismo -->
     <button class="atm-card" data-scene="branch" data-cat="naturalismo" type="button">
       <div class="atm-scene">
-        <img class="atm-scene-img" src={`${import.meta.env.BASE_URL}naturalismo.png`} alt="Naturalismo" loading="lazy">
+        <img class="atm-scene-img" src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/naturalismo.png`} alt="Naturalismo" loading="lazy">
         <canvas class="atm-ink-canvas"></canvas>
       </div>
       <div class="atm-info">
@@ -2301,7 +2301,7 @@ h1 .word span {
     <!-- 5 · Ero-Guro e Giallo -->
     <button class="atm-card" data-scene="lantern" data-cat="eroguro" type="button">
       <div class="atm-scene">
-        <img class="atm-scene-img" src={`${import.meta.env.BASE_URL}ero-guro.png`} alt="Ero-Guro e Giallo" loading="lazy">
+        <img class="atm-scene-img" src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/ero-guro.png`} alt="Ero-Guro e Giallo" loading="lazy">
         <canvas class="atm-ink-canvas"></canvas>
       </div>
       <div class="atm-info">
@@ -2440,12 +2440,12 @@ h1 .word span {
       const delay = (0.05 + index * 0.07).toFixed(2) + 's';
 
       return (
-        <a class="ur-card ur-visible" href={`${import.meta.env.BASE_URL}racconti/${racconto.id}`} style={`transition-delay:${delay}`} key={racconto.id}>
+        <a class="ur-card ur-visible" href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/racconti/${racconto.id}`} style={`transition-delay:${delay}`} key={racconto.id}>
           <div class="ur-card-art" style={`height:${cardHeight}`}>
             {racconto.data.heroImage ? (
               <img 
                 class="ur-card-img" 
-                src={`${import.meta.env.BASE_URL}${racconto.data.heroImage.replace(/^\//, '')}`} 
+                src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/${racconto.data.heroImage.replace(/^\//, '')}`} 
                 alt={racconto.data.title}
                 loading="lazy"
               />
