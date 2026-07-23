@@ -2440,7 +2440,7 @@ h1 .word span {
       const delay = (0.05 + index * 0.07).toFixed(2) + 's';
 
       return (
-        <a class="ur-card ur-visible" href={`/racconti/${racconto.id}`} style={`transition-delay:${delay}`} key={racconto.id}>
+        <a class="ur-card ur-visible" href={`${import.meta.env.BASE_URL}racconti/${racconto.id}`} style={`transition-delay:${delay}`} key={racconto.id}>
           <div class="ur-card-art" style={`height:${cardHeight}`}>
             {racconto.data.heroImage ? (
               <img 

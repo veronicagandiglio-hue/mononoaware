@@ -535,11 +535,11 @@ const slugToEnum: Record<string, string> = {
 
   <!-- NAV -->
   <nav id="navbar">
-    <a href="/" class="nav-logo">東の声</a>
+    <a href={import.meta.env.BASE_URL} class="nav-logo">東の声</a>
     <ul class="nav-links">
-      <li><a href="/racconti">Racconti</a></li>
-      <li><a href="/categorie" class="active">Categorie</a></li>
-      <li><a href="/traduttore">Chi traduce</a></li>
+      <li><a href={`${import.meta.env.BASE_URL}racconti`}>Racconti</a></li>
+      <li><a href={`${import.meta.env.BASE_URL}categorie`} class="active">Categorie</a></li>
+      <li><a href={`${import.meta.env.BASE_URL}traduttore`}>Chi traduce</a></li>
     </ul>
   </nav>
 
@@ -606,7 +606,7 @@ const slugToEnum: Record<string, string> = {
       const count = conteggioPerCategoria[enumKey] ?? 0;
       return (
         <a
-          href={`/categorie/${cat.slug}`}
+          href={`${import.meta.env.BASE_URL}categorie/${cat.slug}`}
           class="categoria-item"
           style={`--cat-accent: ${cat.accent};`}
           data-reveal
@@ -636,11 +636,11 @@ const slugToEnum: Record<string, string> = {
 
   <!-- FOOTER -->
   <footer>
-    <a href="/" class="footer-logo">東の声</a>
+    <a href={import.meta.env.BASE_URL} class="footer-logo">東の声</a>
     <ul class="footer-links-sm">
-      <li><a href="/racconti">Tutti i racconti</a></li>
-      <li><a href="/categorie">Categorie</a></li>
-      <li><a href="/traduttore">Chi traduce</a></li>
+      <li><a href={`${import.meta.env.BASE_URL}racconti`}>Tutti i racconti</a></li>
+      <li><a href={`${import.meta.env.BASE_URL}categorie`}>Categorie</a></li>
+      <li><a href={`${import.meta.env.BASE_URL}traduttore`}>Chi traduce</a></li>
     </ul>
   </footer>
 

@@ -5,7 +5,7 @@ const racconti = await getCollection('racconti', ({ data }) => !data.isDraft);
 <ul>
   {racconti.map(r => (
     <li>
-      <a href={`/racconti/${r.id}`}>{r.data.title}</a>
+      <a href={`${import.meta.env.BASE_URL}racconti/${r.id}`}>{r.data.title}</a>
       <code> — id: {r.id}</code>
     </li>
   ))}

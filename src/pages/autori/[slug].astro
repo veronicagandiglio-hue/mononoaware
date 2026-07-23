@@ -662,14 +662,14 @@ const iniziale = nome[0]?.toUpperCase() ?? '?';
   <div class="cursor" id="cursor"></div>
   <div class="cursor-ring" id="cursorRing"></div>
   <nav id="navbar">
-    <a href="/" class="nav-logo">東の声</a>
+    <a href={import.meta.env.BASE_URL} class="nav-logo">東の声</a>
     <ul class="nav-links">
-      <li><a href="/racconti">Racconti</a></li>
-      <li><a href="/categorie">Categorie</a></li>
-      <li><a href="/autori" class="active">Autori</a></li>
-      <li><a href="/traduttore">Chi traduce</a></li>
+      <li><a href={`${import.meta.env.BASE_URL}racconti`}>Racconti</a></li>
+      <li><a href={`${import.meta.env.BASE_URL}categorie`}>Categorie</a></li>
+      <li><a href={`${import.meta.env.BASE_URL}autori`} class="active">Autori</a></li>
+      <li><a href={`${import.meta.env.BASE_URL}traduttore`}>Chi traduce</a></li>
     </ul>
-    <a href="/autori" class="nav-back">← Tutti gli autori</a>
+    <a href={`${import.meta.env.BASE_URL}autori`} class="nav-back">← Tutti gli autori</a>
   </nav>
 
   <!-- ══════════════════ HERO ═════════════════════════════════ -->
@@ -754,7 +754,7 @@ const iniziale = nome[0]?.toUpperCase() ?? '?';
         ? (
           <div class="racconti-list">
             {storieOrdinate.map(r => (
-              <a class="racconto-item" href={`/racconti/${r.id}`}>
+              <a class="racconto-item" href={`${import.meta.env.BASE_URL}racconti/${r.id}`}>
                 <span class="ri-year">{r.data.yearOriginal ?? '—'}</span>
                 <div class="ri-body">
                   <span class="ri-cat">{r.data.category}</span>
@@ -779,21 +779,21 @@ const iniziale = nome[0]?.toUpperCase() ?? '?';
     <div class="altri-inner">
       <span class="altri-label">Esplora l'archivio</span>
       <div>
-        <a href="/autori" class="altri-link">← Tutti gli autori</a>
+        <a href={`${import.meta.env.BASE_URL}autori`} class="altri-link">← Tutti gli autori</a>
       </div>
       <div style="margin-top:1.2rem;">
-        <a href="/racconti" class="altri-link">Tutti i racconti →</a>
+        <a href={`${import.meta.env.BASE_URL}racconti`} class="altri-link">Tutti i racconti →</a>
       </div>
     </div>
   </section>
 
   <footer>
-    <a href="/" class="footer-logo">東の声</a>
+    <a href={import.meta.env.BASE_URL} class="footer-logo">東の声</a>
     <ul class="footer-links-sm">
-      <li><a href="/racconti">Tutti i racconti</a></li>
-      <li><a href="/categorie">Categorie</a></li>
-      <li><a href="/autori">Autori</a></li>
-      <li><a href="/traduttore">Chi traduce</a></li>
+      <li><a href={`${import.meta.env.BASE_URL}racconti`}>Tutti i racconti</a></li>
+      <li><a href={`${import.meta.env.BASE_URL}categorie`}>Categorie</a></li>
+      <li><a href={`${import.meta.env.BASE_URL}autori`}>Autori</a></li>
+      <li><a href={`${import.meta.env.BASE_URL}traduttore`}>Chi traduce</a></li>
     </ul>
   </footer>
 
