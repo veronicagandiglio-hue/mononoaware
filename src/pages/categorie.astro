@@ -32,15 +32,6 @@ const categorie = [
     colore: '#2a4a5e',
     accent: '#4a8fa8',
   },
-  {
-    slug: 'satira',
-    nome: 'Satira',
-    nomeJp: '諷刺',
-    lettura: 'Fūshi',
-    descrizione: 'Il potere ridicolizzato. I burocrati, gli imperatori, i santi da strapazzo. Racconti che ridono — ma con quella risata amara che graffia mentre diverte.',
-    colore: '#3a5a2a',
-    accent: '#6a9a4a',
-  },
 ];
 
 // conta i racconti per categoria
@@ -55,7 +46,6 @@ const slugToEnum: Record<string, string> = {
   'io-frammentato': 'Io Frammentato',
   'carne-e-fango': 'Carne e Fango',
   'ombre-orientali': 'Ombre Orientali',
-  'satira': 'Satira',
 };
 ---
 
@@ -65,7 +55,9 @@ const slugToEnum: Record<string, string> = {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Categorie — 東の声</title>
-  <meta name="description" content="Quattro voci, quattro mondi. Esplora i racconti per categoria." />
+  <meta name="description" content="Tre voci, tre mondi. Esplora i racconti per categoria." />
+  <link rel="icon" type="image/x-icon" href={`${import.meta.env.BASE_URL}favicon.ico`} />
+  <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -547,8 +539,8 @@ const slugToEnum: Record<string, string> = {
   <section class="page-hero">
     <div class="hero-bg-kanji">分類</div>
     <p class="hero-eyebrow">Esplora per tema</p>
-    <h1>Quattro <em>voci</em>,<br>un archivio.</h1>
-    <p class="hero-subtitle">Ogni categoria è un modo di stare nel mondo — frammentato, incarnato, soprannaturale, o ironico. Scegli la tua porta d'ingresso.</p>
+    <h1>Tre <em>voci</em>,<br>un archivio.</h1>
+    <p class="hero-subtitle">Ogni categoria è un modo di stare nel mondo — frammentato, incarnato, o soprannaturale. Scegli la tua porta d'ingresso.</p>
   </section>
 
   <!-- TICKER -->
@@ -560,15 +552,11 @@ const slugToEnum: Record<string, string> = {
       <span class="ticker-item accent">◈</span>
       <span class="ticker-item">東の影 Ombre Orientali</span>
       <span class="ticker-item accent">◈</span>
-      <span class="ticker-item">諷刺 Satira</span>
-      <span class="ticker-item accent">◈</span>
       <span class="ticker-item">断片 Io Frammentato</span>
       <span class="ticker-item accent">◈</span>
       <span class="ticker-item">肉と泥 Carne e Fango</span>
       <span class="ticker-item accent">◈</span>
       <span class="ticker-item">東の影 Ombre Orientali</span>
-      <span class="ticker-item accent">◈</span>
-      <span class="ticker-item">諷刺 Satira</span>
       <span class="ticker-item accent">◈</span>
     </div>
   </div>
@@ -581,7 +569,7 @@ const slugToEnum: Record<string, string> = {
       <span class="stat-jp">物語</span>
     </div>
     <div class="stat-item">
-      <span class="stat-num">4</span>
+      <span class="stat-num">3</span>
       <span class="stat-label">Categorie</span>
       <span class="stat-jp">分類</span>
     </div>

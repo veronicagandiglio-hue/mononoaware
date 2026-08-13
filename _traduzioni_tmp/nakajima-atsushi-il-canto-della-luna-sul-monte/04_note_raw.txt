@@ -1,0 +1,24 @@
+TESTO_ESATTO: era Tianbao
+NOTA: Periodo di regno dell'imperatore Xuanzong della dinastia Tang (742-756 d.C.), considerato un'epoca d'oro per la cultura e la poesia classica, conclusasi con la sanguinosa ribellione di An Lushan.
+===
+TESTO_ESATTO: esami imperiali
+NOTA: Il rigoroso sistema di selezione burocratica (keju) basato sui classici confuciani e la composizione poetica, che offriva prestigiosi incarichi pubblici ma sottoponeva i candidati a una pressione intellettuale ed emotiva devastante.
+===
+TESTO_ESATTO: fiume Rushui
+NOTA: Corso d'acqua situato nella provincia dell'Henan; la precisione geografica richiama la struttura tipica dei racconti fantastici della tradizione classica cinese (chuanqi), da cui Nakajima trae spunto.
+===
+TESTO_ESATTO: Ispettore Imperiale
+NOTA: Alto funzionario inviato dalla corte centrale per perlustrare le province, verificare l'operato dell'amministrazione locale e garantire l'ordine pubblico.
+===
+TESTO_ESATTO: stazione di posta
+NOTA: Infrastruttura statale situata lungo le arterie dell'impero per il cambio dei cavalli, la trasmissione dei dispacci e il riposo di funzionari e viaggiatori.
+===
+TESTO_ESATTO: tigre antropofaga
+NOTA: Nella narrativa classica sinitica, l'aggressione di una fiera antropofaga rappresenta sia una minaccia reale per i viandanti sia l'estrinsecazione di uno squilibrio morale o karmico.
+===
+TESTO_ESATTO: Chang'an
+NOTA: Magnifica capitale dell'Impero Tang e centro culturale dell'Asia orientale dell'epoca, meta ambita da ogni poeta in cerca di successo e mecenatismo.
+===
+TESTO_ESATTO: corno dell'alba
+NOTA: Segnale acustico militare utilizzato nelle stazioni di posta e nei presidi per scandire i turni di guardia e segnalare la fine della notte.
+===

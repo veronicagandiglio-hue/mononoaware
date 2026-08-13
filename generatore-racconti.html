@@ -520,8 +520,25 @@ h1, h2 { font-family: 'Playfair Display', serif; letter-spacing: -0.02em; }
       <input type="text" id="f-author" placeholder="Izumi Kyōka">
     </div>
     <div class="field">
-      <label>Titolo originale <span class="optional">· facoltativo</span></label>
+      <label>Titolo originale <span class="optional">· facoltativo · nella lingua/script di partenza</span></label>
       <input type="text" id="f-originalTitle" placeholder="提灯の下に雨">
+    </div>
+
+    <!-- Lingua originale & Paese -->
+    <div class="field">
+      <label>Lingua originale <span class="optional">· obbligatorio</span></label>
+      <input type="text" id="f-origLang" list="lang-options" placeholder="Giapponese" value="Giapponese">
+      <datalist id="lang-options">
+        <option value="Giapponese">
+        <option value="Cinese">
+        <option value="Coreano">
+        <option value="Italiano">
+      </datalist>
+      <p class="field-note">Compare come "Traduzione dal ___" nella pagina del racconto.</p>
+    </div>
+    <div class="field">
+      <label>Paese <span class="optional">· obbligatorio</span></label>
+      <input type="text" id="f-country" placeholder="Giappone" value="Giappone">
     </div>
 
     <!-- Categoria & Anno -->
@@ -531,11 +548,12 @@ h1, h2 { font-family: 'Playfair Display', serif; letter-spacing: -0.02em; }
         <option value="">— seleziona —</option>
         <option>Naturalismo</option>
         <option>Romanzo dell'Io</option>
-        
+        <option>Estetismo</option>
         <option>Ero-Guro e Giallo</option>
         <option>Folklore e Fantasmi</option>
         <option>Satira e Critica Sociale</option>
-        
+        <option>Modernismo</option>
+        <option>Realismo Storico</option>
       </select>
     </div>
     <div class="field">
@@ -543,7 +561,29 @@ h1, h2 { font-family: 'Playfair Display', serif; letter-spacing: -0.02em; }
       <input type="number" id="f-year" placeholder="1898" min="600" max="1970">
     </div>
 
-    
+    <!-- Periodo & Traduttore -->
+    <div class="field">
+      <label>Periodo storico <span class="optional">· facoltativo · sostituisce l'anno nell'hero</span></label>
+      <input type="text" id="f-period" placeholder="Periodo Meiji">
+    </div>
+    <div class="field">
+      <label>Traduttore <span class="optional">· facoltativo</span></label>
+      <input type="text" id="f-translator" placeholder="Gemini 3.1 Pro Preview" value="Gemini 3.1 Pro Preview">
+    </div>
+
+    <!-- Titolo in lingua/script originale (kanji ecc.) -->
+    <div class="field full">
+      <label>Titolo — kanji/script <span class="optional">· facoltativo · non ancora mostrato nel sito, salvato per uso futuro</span></label>
+      <input type="text" id="f-titleJp" placeholder="十三夜">
+    </div>
+
+    <!-- Bozza -->
+    <div class="field full">
+      <label class="field-check" for="f-isDraft">
+        <input type="checkbox" id="f-isDraft">
+        <span>Bozza — non pubblicare ancora questo racconto (isDraft: true)</span>
+      </label>
+    </div>
 
     <!-- Description (max 160) -->
     <div class="field full">
@@ -571,7 +611,12 @@ h1, h2 { font-family: 'Playfair Display', serif; letter-spacing: -0.02em; }
       <div class="tags-display" id="tags-display"></div>
     </div>
 
-    
+    <div class="field full">
+      <label>Nota del traduttore <span class="optional">· facoltativo · una riga, diversa dalle "Note finali" e da "Oltre le parole"</span></label>
+      <input type="text" id="f-note" placeholder="Izumi Kyōka (1873–1939) sviluppò uno stile unico al confine tra realismo e soprannaturale.">
+      <p class="field-note">Salvata nel frontmatter come <code style="font-family:'JetBrains Mono',monospace;font-size:14px;">note</code>. Nota: nella pagina attuale del racconto questo campo non ha ancora un punto in cui viene mostrato — verificalo prima di affidarci contenuti importanti.</p>
+    </div>
+
 
     <div class="field full">
       <label>Oltre le parole <span class="optional">· facoltativo · testo che appare nella sidebar</span></label>
@@ -1159,6 +1204,7 @@ function saveDraft () {
     isDraft:     checked('f-isDraft', false),
     description: val('f-description'),
     excerpt:     val('f-excerpt'),
+    heroImage:   val('f-heroImage'),
     note:        val('f-note'),
     oltre:       val('f-oltre'),
     tags:        [..._tags],

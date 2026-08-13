@@ -100,6 +100,8 @@ const iniziale = nome[0]?.toUpperCase() ?? '?';
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{nome} — 東の声</title>
   <meta name="description" content={excerpt || `Racconti e biografia di ${nome} nella narrativa giapponese classica.`} />
+  <link rel="icon" type="image/x-icon" href={`${import.meta.env.BASE_URL}favicon.ico`} />
+  <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -597,8 +599,8 @@ const iniziale = nome[0]?.toUpperCase() ?? '?';
     }
     .altri-link:hover { color: var(--red); }
 
-    /      /* ─── RESPONSIVE ─────────────────────────────────────────── */
-      @media (max-width: 900px) {
+    /* ─── RESPONSIVE ─────────────────────────────────────────── */
+    @media (max-width: 900px) {
         .author-hero {
           padding: 7rem 1.5rem 3.5rem;
           min-height: auto;

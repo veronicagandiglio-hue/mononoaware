@@ -5,6 +5,8 @@
 <head>
     <meta charset="utf-8" />
     <title>Generatore di Racconti</title>
+    <link rel="icon" type="image/x-icon" href={`${import.meta.env.BASE_URL}favicon.ico`} />
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
     <style>
         body { font-family: sans-serif; max-width: 600px; margin: 40px auto; background: #1a1a1a; color: white; padding: 20px; }
         input, textarea, select { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: none; }
@@ -21,12 +23,9 @@
     <select id="category">
         <option value="Naturalismo">Naturalismo</option>
     <option value="Romanzo dell'Io">Romanzo dell'Io</option>
-    <option value="Estetismo">Estetismo</option>
     <option value="Ero-Guro e Giallo">Ero-Guro e Giallo</option>
     <option value="Folklore e Fantasmi">Folklore e Fantasmi</option>
-    <option value="Satira e Critica Sociale">Satira e Critica Sociale</option>
     <option value="Modernismo">Modernismo</option>
-    <option value="Realismo Storico">Realismo Storico</option>
     </select>
     <textarea id="desc" placeholder="Breve descrizione (max 160 caratteri)"></textarea>
     <textarea id="content" rows="10" placeholder="Incolla qui il testo del racconto..."></textarea>

@@ -93,6 +93,11 @@ Object.entries(categoryMetadata).forEach(([key, meta]) => {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>東の声 — Ink Reveal Hero</title>
+<link rel="icon" type="image/x-icon" href={`${import.meta.env.BASE_URL}favicon.ico`} />
+<link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+<script is:inline define:vars={{ baseUrl: import.meta.env.BASE_URL }}>
+  window.BASE_URL = baseUrl;
+</script>
 <!-- Font superset che copre entrambe le sezioni -->
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
 <style>
@@ -681,30 +686,21 @@ h1 .word span {
 /* ── Accenti per categoria ── */
 .portal[data-cat="naturalismo"]  { --accent: #a07848; }
 .portal[data-cat="romanzo-io"]   { --accent: #6080a8; }
-.portal[data-cat="estetismo"]    { --accent: #c8922a; }
 .portal[data-cat="ero-guro"]     { --accent: #904868; }
 .portal[data-cat="folklore"]     { --accent: #508870; }
-.portal[data-cat="satira"]       { --accent: #b09030; }
 .portal[data-cat="modernismo"]   { --accent: #4878c0; }
-.portal[data-cat="storico"]      { --accent: #9c7840; }
 
 /* ── Background placeholder per ogni portale ── */
 .portal[data-cat="naturalismo"]  .portal-bg { background-color: #0e0b08;
   background-image: radial-gradient(ellipse 60% 50% at 30% 60%, #2a1e12 0%, #0e0b08 70%); }
 .portal[data-cat="romanzo-io"]   .portal-bg { background-color: #0a0e16;
   background-image: radial-gradient(ellipse 50% 60% at 40% 55%, #1a2638 0%, #0a0e16 70%); }
-.portal[data-cat="estetismo"]    .portal-bg { background-color: #120a06;
-  background-image: radial-gradient(ellipse 55% 65% at 60% 45%, #2a1608 0%, #120a06 70%); }
 .portal[data-cat="ero-guro"]     .portal-bg { background-color: #070509;
   background-image: radial-gradient(ellipse 35% 40% at 55% 40%, #2a1020 0%, #070509 60%); }
 .portal[data-cat="folklore"]     .portal-bg { background-color: #080e0a;
   background-image: radial-gradient(ellipse 60% 70% at 50% 30%, #183028 0%, #080e0a 70%); }
-.portal[data-cat="satira"]       .portal-bg { background-color: #10100a;
-  background-image: radial-gradient(ellipse 70% 50% at 50% 70%, #2a2810 0%, #10100a 70%); }
 .portal[data-cat="modernismo"]   .portal-bg { background-color: #060810;
   background-image: radial-gradient(ellipse 65% 55% at 45% 50%, #102040 0%, #060810 70%); }
-.portal[data-cat="storico"]      .portal-bg { background-color: #0e0c08;
-  background-image: radial-gradient(ellipse 70% 50% at 40% 50%, #2a2010 0%, #0e0c08 70%); }
 
 /* ── Micro-animazioni atmosferiche ── */
 .rain-drop {
@@ -856,18 +852,6 @@ h1 .word span {
   24%     { opacity: calc(var(--neon-base, 0.12) * 2.2); }
   50%     { opacity: var(--neon-base, 0.12); }
   80%     { opacity: calc(var(--neon-base, 0.12) * 1.6); }
-}
-
-.satira-dot {
-  position: absolute;
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: rgba(200,170,60,0.4);
-  animation: satira-bounce ease-in-out infinite;
-}
-@keyframes satira-bounce {
-  0%,100% { transform: translateY(0) scale(1); opacity: 0.4; }
-  50%     { transform: translateY(var(--bh,-8px)) scale(1.2); opacity: 0.8; }
 }
 
 /* Grain overlay portali */
@@ -2769,11 +2753,12 @@ const loadedImages = [];
 function loadImages(filenames) {
   return Promise.all(filenames.map(name => new Promise(resolve => {
     const img = new Image();
-    img.src = `/mnt/user-data/uploads/${name}`;
+    const base = window.BASE_URL || '/';
+    img.src = base + name;
     img.onload  = () => resolve(img);
     img.onerror = () => {
       const img2 = new Image();
-      img2.src = name;
+      img2.src = `/mnt/user-data/uploads/${name}`;
       img2.onload  = () => resolve(img2);
       img2.onerror = () => resolve(null);
     };

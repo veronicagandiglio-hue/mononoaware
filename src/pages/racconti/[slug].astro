@@ -54,7 +54,6 @@ const r = {
   linguaOrig:      d.originalLanguage,
   heroImage:       d.heroImage ?? null,
 
-  notaTraduttore:  d.note ?? null,
   oltreParole:     d.oltreLeParole ?? null,
   capitoli,
   correlati,
@@ -69,6 +68,8 @@ const r = {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{r.titolo} — {r.autore}</title>
+<link rel="icon" type="image/x-icon" href={`${import.meta.env.BASE_URL}favicon.ico`} />
+<link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap" rel="stylesheet">
 <style>
 /* ─────────────────────────────────────────────────────────
@@ -955,29 +956,6 @@ html.night #reading-header { background: rgba(15,12,9,0.94); }
   vertical-align: super;
   color: var(--blood);
   text-decoration: none;
-}
-
-/* Nota del traduttore */
-.translator-note {
-  margin-top: 64px;
-  padding: 24px 28px;
-  border-left: 2px solid var(--blood);
-  font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-size: 15px;
-  line-height: 1.72;
-  color: var(--fg-muted);
-  transition: color var(--tr);
-}
-.translator-note::before {
-  content: 'Nota del traduttore';
-  display: block;
-  font-style: normal;
-  font-size: 9px;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: var(--blood);
-  margin-bottom: 10px;
 }
 
 @media (max-width: 860px) {
