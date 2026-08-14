@@ -6,31 +6,54 @@ const racconti = await getCollection('racconti', ({ data }) => !data.isDraft);
 
 const categorie = [
   {
-    slug: 'io-frammentato',
-    nome: 'Io Frammentato',
-    nomeJp: '断片',
-    lettura: 'Danpen',
-    descrizione: 'Voci che si spezzano. Identità in frantumi, coscienze che si moltiplicano o si dissolvono. Racconti dove il narratore non sa più chi è — o non vuole saperlo.',
-    colore: '#7a6a5a',
-    accent: '#c9a84c',
+    slug: 'romanzo-dell-io',
+    nome: "Romanzo dell'Io",
+    nomeJp: '私小説',
+    lettura: 'Watakushi Shōsetsu',
+    descrizione: 'Confessioni, vergogna, desideri inconfessabili e la malinconia come lingua madre. Lo scandalo intimo e lo sguardo implacabile rivolto verso il proprio abisso interiore.',
+    colore: '#5c6b73',
+    accent: '#9E2A2B',
+    enumName: "Romanzo dell'Io",
   },
   {
-    slug: 'carne-e-fango',
-    nome: 'Carne e Fango',
-    nomeJp: '肉と泥',
-    lettura: 'Niku to Doro',
-    descrizione: 'Il corpo come prigione, come campo di battaglia, come unica verità rimasta. Storie di fame, desiderio, dolore fisico e quella strana dignità che nasce dal fango.',
-    colore: '#8b3a2a',
-    accent: '#b5271b',
+    slug: 'naturalismo',
+    nome: 'Naturalismo',
+    nomeJp: '自然主義',
+    lettura: 'Shizen-shugi',
+    descrizione: 'Fame, contrasti sociali, desideri troppo grandi per vite troppo piccole. Lo sguardo crudo, limpido e disilluso sulla realtà umana senza concessioni né facili consolazioni.',
+    colore: '#6b705c',
+    accent: '#8b5a2b',
+    enumName: 'Naturalismo',
   },
   {
-    slug: 'ombre-orientali',
-    nome: 'Ombre Orientali',
-    nomeJp: '東の影',
-    lettura: 'Higashi no Kage',
-    descrizione: 'Spiriti, volpi trasformate, draghi dormienti e fantasmi che non hanno ricevuto il congedo. Il soprannaturale come linguaggio per dire ciò che il reale non riesce a contenere.',
+    slug: 'folklore-e-fantasmi',
+    nome: 'Folklore e Fantasmi',
+    nomeJp: '民話・怪談',
+    lettura: 'Minwa & Kaidan',
+    descrizione: 'Spiriti, metamorfosi, antiche leggende e fantasmi che rifiutano l\'oblio. Dove il mondo visibile finisce e le storie ancestrali cominciano a respirare.',
     colore: '#2a4a5e',
     accent: '#4a8fa8',
+    enumName: 'Folklore e Fantasmi',
+  },
+  {
+    slug: 'modernismo',
+    nome: 'Modernismo',
+    nomeJp: '新感覚派',
+    lettura: 'Modanizumu',
+    descrizione: 'Città elettriche, treni notturni, cosmi interiori e frammentazione. Il mondo che accelera vertiginosamente e l\'essere umano alla ricerca di una nuova lingua poetica.',
+    colore: '#3d5a80',
+    accent: '#c9a84c',
+    enumName: 'Modernismo',
+  },
+  {
+    slug: 'ero-guro-e-giallo',
+    nome: 'Ero-Guro e Giallo',
+    nomeJp: '怪奇・推理',
+    lettura: 'Ero-Guro & Suiri',
+    descrizione: 'Desiderio morboso, bizzarrie, enigmi oscuri e il fascino dell\'irreparabile. L\'esplorazione del grottesco, del sensazionale e dell\'ombra nel Giappone del Novecento.',
+    colore: '#4a2835',
+    accent: '#b5271b',
+    enumName: 'Ero-Guro e Giallo',
   },
 ];
 
@@ -40,13 +63,6 @@ const conteggioPerCategoria = racconti.reduce((acc, r) => {
   acc[cat] = (acc[cat] || 0) + 1;
   return acc;
 }, {} as Record<string, number>);
-
-// mappa slug → nome categoria enum
-const slugToEnum: Record<string, string> = {
-  'io-frammentato': 'Io Frammentato',
-  'carne-e-fango': 'Carne e Fango',
-  'ombre-orientali': 'Ombre Orientali',
-};
 ---
 
 <!DOCTYPE html>
@@ -399,6 +415,63 @@ const slugToEnum: Record<string, string> = {
       color: var(--cat-accent);
     }
 
+    .cat-stories-list {
+      margin-top: 1.8rem;
+      padding-top: 1.2rem;
+      border-top: 1px dashed rgba(13,12,10,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .cat-stories-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--mist);
+      font-weight: 500;
+    }
+    .cat-stories-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      list-style: none;
+    }
+    .cat-story-pill {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(13,12,10,0.1);
+      border-radius: 4px;
+      text-decoration: none;
+      color: var(--ink);
+      font-size: 0.95rem;
+      transition: all 0.25s ease;
+    }
+    .cat-story-pill:hover {
+      background: #fff;
+      border-color: var(--cat-accent);
+      color: var(--cat-accent);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    }
+    .cat-story-title {
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+    }
+    .cat-story-author {
+      font-size: 0.8rem;
+      color: var(--mist);
+      font-style: italic;
+    }
+    .cat-empty-msg {
+      font-size: 0.88rem;
+      color: var(--mist-light);
+      font-style: italic;
+      margin-top: 1.2rem;
+    }
+
     /* ─── TICKER ─── */
     .ticker-wrap {
       overflow: hidden;
@@ -539,24 +612,32 @@ const slugToEnum: Record<string, string> = {
   <section class="page-hero">
     <div class="hero-bg-kanji">分類</div>
     <p class="hero-eyebrow">Esplora per tema</p>
-    <h1>Tre <em>voci</em>,<br>un archivio.</h1>
-    <p class="hero-subtitle">Ogni categoria è un modo di stare nel mondo — frammentato, incarnato, o soprannaturale. Scegli la tua porta d'ingresso.</p>
+    <h1>Cinque <em>voci</em>,<br>un archivio.</h1>
+    <p class="hero-subtitle">Ogni categoria è un modo di stare nel mondo — confessione, natura, mistero, modernità o abisso. Scegli la tua porta d'ingresso.</p>
   </section>
 
   <!-- TICKER -->
   <div class="ticker-wrap">
     <div class="ticker-track">
-      <span class="ticker-item">断片 Io Frammentato</span>
+      <span class="ticker-item">私小説 Romanzo dell'Io</span>
       <span class="ticker-item accent">◈</span>
-      <span class="ticker-item">肉と泥 Carne e Fango</span>
+      <span class="ticker-item">自然主義 Naturalismo</span>
       <span class="ticker-item accent">◈</span>
-      <span class="ticker-item">東の影 Ombre Orientali</span>
+      <span class="ticker-item">民話・怪談 Folklore e Fantasmi</span>
       <span class="ticker-item accent">◈</span>
-      <span class="ticker-item">断片 Io Frammentato</span>
+      <span class="ticker-item">新感覚派 Modernismo</span>
       <span class="ticker-item accent">◈</span>
-      <span class="ticker-item">肉と泥 Carne e Fango</span>
+      <span class="ticker-item">怪奇・推理 Ero-Guro e Giallo</span>
       <span class="ticker-item accent">◈</span>
-      <span class="ticker-item">東の影 Ombre Orientali</span>
+      <span class="ticker-item">私小説 Romanzo dell'Io</span>
+      <span class="ticker-item accent">◈</span>
+      <span class="ticker-item">自然主義 Naturalismo</span>
+      <span class="ticker-item accent">◈</span>
+      <span class="ticker-item">民話・怪談 Folklore e Fantasmi</span>
+      <span class="ticker-item accent">◈</span>
+      <span class="ticker-item">新感覚派 Modernismo</span>
+      <span class="ticker-item accent">◈</span>
+      <span class="ticker-item">怪奇・推理 Ero-Guro e Giallo</span>
       <span class="ticker-item accent">◈</span>
     </div>
   </div>
@@ -569,13 +650,13 @@ const slugToEnum: Record<string, string> = {
       <span class="stat-jp">物語</span>
     </div>
     <div class="stat-item">
-      <span class="stat-num">3</span>
+      <span class="stat-num">{categorie.length}</span>
       <span class="stat-label">Categorie</span>
       <span class="stat-jp">分類</span>
     </div>
     <div class="stat-item">
-      <span class="stat-num">3</span>
-      <span class="stat-label">Paesi d'origine</span>
+      <span class="stat-num">Giappone</span>
+      <span class="stat-label">Paese d'origine</span>
       <span class="stat-jp">国</span>
     </div>
   </div>
@@ -590,11 +671,10 @@ const slugToEnum: Record<string, string> = {
   <!-- CATEGORIE -->
   <div class="categorie-list">
     {categorie.map((cat, i) => {
-      const enumKey = slugToEnum[cat.slug];
-      const count = conteggioPerCategoria[enumKey] ?? 0;
+      const count = conteggioPerCategoria[cat.enumName] ?? 0;
+      const raccontiInCat = racconti.filter(r => r.data.category === cat.enumName);
       return (
-        <a
-          href={`${import.meta.env.BASE_URL}categorie/${cat.slug}`}
+        <div
           class="categoria-item"
           style={`--cat-accent: ${cat.accent};`}
           data-reveal
@@ -610,14 +690,31 @@ const slugToEnum: Record<string, string> = {
                 </div>
               </div>
               <p class="cat-desc">{cat.descrizione}</p>
+
+              {raccontiInCat.length > 0 ? (
+                <div class="cat-stories-list">
+                  <span class="cat-stories-label">Racconti in questa categoria:</span>
+                  <ul class="cat-stories-grid">
+                    {raccontiInCat.map(r => (
+                      <li>
+                        <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/racconti/${r.id}`} class="cat-story-pill">
+                          <span class="cat-story-title">{r.data.title}</span>
+                          <span class="cat-story-author">— {r.data.author} ({r.data.yearOriginal})</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <p class="cat-empty-msg">Traduzioni in arrivo per questa atmosfera.</p>
+              )}
             </div>
             <div class="cat-cta">
               <span class="cat-count">{count}</span>
               <span class="cat-count-label">racconti</span>
-              <span class="cat-arrow">→</span>
             </div>
           </div>
-        </a>
+        </div>
       );
     })}
   </div>

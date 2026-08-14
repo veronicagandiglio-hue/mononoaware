@@ -1,0 +1,45 @@
+TESTO_ESATTO: zucchette di *karasuri*
+NOTA: Il *karasuri* (tricosante giapponese) è una pianta rampicante i cui frutti rotondi venivano svuotati ed essiccati per creare il corpo di piccole lanterne artigianali durante le feste estive.
+===
+TESTO_ESATTO: ghirlande di foglie di tasso
+NOTA: L'uso di conifere e piante sempreverdi come il tasso (*ichii*) ha una funzione di purificazione rituale per accogliere gli spiriti e propiziare la buona sorte nelle abitazioni.
+===
+TESTO_ESATTO: caratteri di piombo
+NOTA: Si riferisce alla composizione tipografica a mano mediante caratteri mobili (*kanba*), una mansione faticosa ed estremamente precisa affidata ai giovani praticanti nelle tipografie d'epoca Taishō.
+===
+TESTO_ESATTO: zucchero a quadretti
+NOTA: Lo zucchero in zollette o quadretti rappresenta un bene di consumo raro e di pregio nell'ambiente rurale dell'epoca, consumato come alimento tonico o per addolcire i rimedi dei malati.
+===
+TESTO_ESATTO: pesca al nord
+NOTA: Riferimento alle spedizioni stagionali di pesca nei mari settentrionali della Kamčatka e dell'isola di Karafuto (Sakhalin), un'attività dura e rischiosa intrapresa da molti lavoratori della regione del Tōhoku.
+===
+TESTO_ESATTO: Festa di Centauro
+NOTA: Fictionalizzazione poetica dell'autore che sovrappone elementi astronomici occidentali (la costellazione del Centauro) alle tradizionali festività estive giapponesi dedicate alle stelle, come il Tanabata.
+===
+TESTO_ESATTO: Centauro, fai piovere la rugiada!
+NOTA: Adattamento di un'invocazione rituale infantile legata alla credenza secondo cui la rugiada cosmica caduta durante la notte delle stelle possedesse virtù purificatrici e curative.
+===
+TESTO_ESATTO: Canzone del giro delle stelle
+NOTA: Traduzione del titolo *Hoshimeguri no uta*, celebre poesia e canzone infantile i cui versi e la cui melodia furono scritti dallo stesso Miyazawa Kenji.
+===
+TESTO_ESATTO: mioscanthi d'argento
+NOTA: Il *susuki* (miscantho giapponese) è un'erba piumosa dai riflessi argentei tipica dei paesaggi autunnali nipponici, tradizionalmente associata nella poesia classica al confine tra questo e l'altro mondo.
+===
+TESTO_ESATTO: genziane viola
+NOTA: I fiori di genziana (*rindō*), col loro caratteristico colore blu-violaceo scuro, sbocciano a inizio autunno sui monti del nord del Giappone ed evocano un senso di sobria e composta malinconia.
+===
+TESTO_ESATTO: Costa del Pliocene
+NOTA: Riferimento diretto all'intensa passione di Miyazawa Kenji per la geologia e la paleontologia, maturate durante gli studi agronomici e le sue esplorazioni lungo la valle del fiume Kitakami.
+===
+TESTO_ESATTO: furoshiki
+NOTA: Il classico quadrato di stoffa tradizionale giapponese utilizzato fin dall'antichità per avvolgere, riporre e trasportare bagagli o merci di varia natura.
+===
+TESTO_ESATTO: osservatorio di Albireo
+NOTA: Albireo è una famosa stella doppia nella costellazione del Cigno, celebre in astronomia poiché formata da due componenti di colori contrastanti (uno zaffiro e l'altro topazio) che si completano a vicenda.
+===
+TESTO_ESATTO: Sinfonia dal Nuovo Mondo
+NOTA: La celebre Sinfonia n. 9 di Antonín Dvořák; il cui celebre movimento *Largo* era immensamente popolare nel Giappone dell'era Taishō come melodia di nostalgia profonda e ritorno a casa.
+===
+TESTO_ESATTO: lampade all'acetilene
+NOTA: Dispositivi d'illuminazione a gas carburo ampiamente impiegati dai pescatori e dalle popolazioni rurali giapponesi per la pesca notturna lungo i fiumi e sui banchi di sabbia.
+===

@@ -1,0 +1,87 @@
+TESTO_ESATTO: hakama
+NOTA: Indumento tradizionale giapponese simile a una gonna-pantalone pieghettata, indossato sopra il kimono nelle occasioni formali.
+===
+TESTO_ESATTO: hibachi
+NOTA: Braciere tradizionale giapponese in ceramica, legno o metallo, utilizzato per riscaldare gli ambienti domestici tramite carbone ardente.
+===
+TESTO_ESATTO: Tōhoku
+NOTA: Regione nord-orientale dell'isola principale del Giappone (Honshū), storicamente rurale, montuosa e lontana dalla vita della capitale.
+===
+TESTO_ESATTO: amanattō
+NOTA: Dolce tradizionale giapponese a base di fagioli azuki o altri legumi lessati nello sciroppo di zucchero e successivamente asciugati.
+===
+TESTO_ESATTO: castella
+NOTA: Soffice pan di Spagna di origine portoghese, introdotto dai mercanti nel XVI secolo e diventato una celebre specialità dolciaria giapponese.
+===
+TESTO_ESATTO: zen
+NOTA: Vassoio-tavolino individuale dotato di brevi sostegni, impiegato nella consumazione tradizionale dei pasti.
+===
+TESTO_ESATTO: yukata
+NOTA: Kimono estivo leggero e privo di fodera, in cotone, indossato per il riposo domestico o durante i festival estivi.
+===
+TESTO_ESATTO: Sakuragi-chō, nel quartiere di Ueno
+NOTA: Zona residenziale adiacente al parco di Ueno a Tokyo, area storicamente legata alle istituzioni artistiche e culturali della capitale.
+===
+TESTO_ESATTO: Nakamise, ad Asakusa
+NOTA: Storica via commerciale pedonale di Tokyo situata nel quartiere di Asakusa, celebre per le botteghe di giocattoli tradizionali e souvenir.
+===
+TESTO_ESATTO: furoshiki
+NOTA: Fazzoletto quadrato di stoffa tradizionale impiegato per avvolgere, proteggere e trasportare oggetti, vestiti o regali.
+===
+TESTO_ESATTO: kōdan
+NOTA: Arte orale di narrazione scenica incentrata sulla recitazione declamata di cronache storiche, battaglie ed editti dei samurai.
+===
+TESTO_ESATTO: rakugo
+NOTA: Forma teatrale comica solista in cui il narratore, seduto su un cuscino, racconta vicende umoristiche dando voce a più personaggi.
+===
+TESTO_ESATTO: geta
+NOTA: Sandali tradizionali in legno rialzati da tasselli inferiori, indossati insieme ai kimono o agli yukata.
+===
+TESTO_ESATTO: Io sono un gatto
+NOTA: Famoso romanzo satirico del 1905 di Natsume Sōseki che critica i costumi della società giapponese dell'epoca Meiji dal punto di vista di un felino domestico.
+===
+TESTO_ESATTO: chiyogami
+NOTA: Carta artigianale tradizionale (washi) decorata con colorati motivi geometrici o floreali stampati in xilografia.
+===
+TESTO_ESATTO: tombe dei quarantasette rōnin al tempio Sengaku-ji
+NOTA: Famoso monumento memoriale a Tokyo legato alla vicenda storica del XVIII secolo in cui quarantasette samurai rimasti senza padrone vendicarono il proprio signore.
+===
+TESTO_ESATTO: shitamachi
+NOTA: Termine che indica la "città bassa" di Tokyo, storicamente abitata dai ceti popolari, artigiani e mercanti.
+===
+TESTO_ESATTO: yudōfu
+NOTA: Piatto invernale essenziale costituito da cubetti di tofu scaldate in un brodo leggero di alga kombu.
+===
+TESTO_ESATTO: Denki Bran
+NOTA: Noto cocktail alcolico creato ad Asakusa nell'era Meiji; il nome "Brandy Elettrico" alludeva alla novità e al fascino della modernità occidentale.
+===
+TESTO_ESATTO: kasuri
+NOTA: Tessuto tradizionale in cotone o seta caratterizzato da motivi decorativi dai contorni sfumati, ottenuti tingendo i fili prima della tessitura.
+===
+TESTO_ESATTO: aodaishō
+NOTA: Il colubro giapponese del topo (*Elaphe climacophora*), un serpente innocuo molto diffuso nelle campagne del Giappone.
+===
+TESTO_ESATTO: kotatsu
+NOTA: Tavolo basso in legno provvisto di una fonte di calore interna e coperto da una pesante trapunta attorno a cui sedersi per scaldarsi.
+===
+TESTO_ESATTO: tatami-iwashi
+NOTA: Snack essiccato formato da minuscoli avannotti di sardina disposti ad asciugare a forma di sottile foglio croccante.
+===
+TESTO_ESATTO: tokkuri
+NOTA: Piccola brocca tradizionale in ceramica con collo stretto usata per scaldare e versare il sakè.
+===
+TESTO_ESATTO: oshiruko
+NOTA: Zuppa dolce calda a base di fagioli azuki servita con mochi (panetti di riso glutinoso).
+===
+TESTO_ESATTO: Rubā'iyyāt
+NOTA: Celebre raccolta di quartine del poeta persiano Omar Khayyām, molto diffusa nel panorama letterario giapponese nei primi decenni del Novecento.
+===
+TESTO_ESATTO: shōchū
+NOTA: Bevanda alcolica distillata tipica giapponese, prodotta da ingredienti quali patate dolci, riso o orzo, dotata di gradazione più alta del sakè.
+===
+TESTO_ESATTO: dotera
+NOTA: Ampia giacca da kimono invernale pesante e imbottita d'ovatta, utilizzata in casa come vestaglia.
+===
+TESTO_ESATTO: shunga
+NOTA: Stampe artistiche giapponesi di contenuto erotico prodotte principalmente nell'ambito del genere xilografico ukiyo-e durante il periodo Edo.
+===

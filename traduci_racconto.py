@@ -254,7 +254,8 @@ Il tuo compito è fare un "fine-tuning" della traduzione:
     1. Controllo fedeltà: Segnala se ci sono stati errori di traduzione, fraintendimenti di kanji o sfumature perse.
     2. Fluidità in italiano: Suggerisci miglioramenti per frasi che suonano "legnose" o troppo letterali, proponendo alternative più eleganti ma sempre fedeli al testo.
     3. Scelte lessicali: Verifica se un termine italiano scelto è davvero il più adatto al contesto storico e culturale del racconto originale.
-Riscrivi tutto il testo corretto.
+
+REGOLA ASSOLUTA SULLA LUNGHEZZA: la tua risposta deve contenere l'INTERO testo italiano da cima a fondo, capitolo per capitolo, senza saltare né riassumere alcuna parte, anche se il testo è molto lungo. Non fermarti prima della fine e non sostituire porzioni di testo con riassunti, omissioni o frasi tipo "[...]" o "(il testo prosegue)". La lunghezza della tua risposta in output deve essere paragonabile a quella del testo tradotto che ti fornisco in input: se la tua risposta risulta sensibilmente più corta dell'originale fornito, hai commesso un errore. Se il testo è troppo lungo per una sola risposta, scrivi fino al limite consentito e poi fermati: verrà richiesto un seguito automaticamente.
 
 Qui c'è il testo originale giapponese:
 {testo_originale}
@@ -262,7 +263,7 @@ Qui c'è il testo originale giapponese:
 E qui la mia traduzione:
 {testo_tradotto}
 
-Restituisci SOLO il testo italiano corretto e riscritto per intero, senza spiegazioni delle modifiche, senza premesse, senza racchiuderlo in blocchi di codice."""
+Restituisci SOLO il testo italiano corretto e riscritto per intero, dall'inizio alla fine senza saltare nulla, senza spiegazioni delle modifiche, senza premesse, senza racchiuderlo in blocchi di codice."""
 
 PROMPT_FASE3 = """Ora agisci come un brillante saggista letterario, esperto di letteratura giapponese, psicologia del profondo e cultura del Giappone moderno.
 Sto pubblicando gratuitamente il racconto giapponese che abbiamo appena tradotto sul mio sito. Il tuo obiettivo ora NON è fare una spiegazione scolastica del testo.
@@ -730,19 +731,29 @@ def translate_chunk_fase1(chunk: str, api_key: str, model: str, autore: str, tit
 
 
 def fase1_traduzione(original_text: str, api_key: str, model: str, autore: str,
-                      titolo: str, chunk_chars: int) -> str:
+                      titolo: str, chunk_chars: int, work_dir: Path,
+                      resuming: bool = False) -> str:
     chunks = chunk_text(original_text, chunk_chars)
     total = len(chunks)
     parts: list[str] = []
     prev_ctx = ""
 
     for i, chunk in enumerate(chunks, start=1):
+        step_name = f"01_traduzione_parte{i:03d}"
         label = f" (parte {i} di {total})" if total > 1 else ""
-        log(f"→ FASE 1 — Traduzione{label}…")
-        result = translate_chunk_fase1(chunk, api_key, model, autore, titolo, prev_ctx, label)
+
+        cached = load_step(work_dir, step_name) if resuming else None
+        if cached is not None:
+            log(f"  ↺ Parte {i} di {total} già tradotta, recuperata dal checkpoint.")
+            result = cached
+        else:
+            log(f"→ FASE 1 — Traduzione{label}…")
+            result = translate_chunk_fase1(chunk, api_key, model, autore, titolo, prev_ctx, label)
+            save_step(work_dir, step_name, result)
+
         parts.append(result)
         prev_ctx = result[-CONTEXT_CHARS:]
-        if i < total:
+        if i < total and cached is None:
             time.sleep(0.6)
 
     return parts[0] if len(parts) == 1 else "\n\n".join(parts)
@@ -755,9 +766,24 @@ def fase1_traduzione(original_text: str, api_key: str, model: str, autore: str,
 def fase2_revisione(original_text: str, translated_text: str, api_key: str, model: str) -> str:
     log("→ FASE 2 — Revisione…")
     prompt = PROMPT_FASE2.format(testo_originale=original_text, testo_tradotto=translated_text)
+
+    def _safe_call(p: str) -> str:
+        result = call_with_continuation(p, CONTINUA_FASE2, api_key, model,
+                                         temperature=0.2, top_p=0.70)
+        # Rete di sicurezza: se il modello ha "riassunto" invece di riscrivere
+        # per intero (capita su testi molto lunghi), la revisione risulta
+        # sensibilmente più corta della traduzione di partenza. In tal caso
+        # è più sicuro scartarla e tenere la traduzione della FASE 1, piuttosto
+        # che pubblicare un racconto troncato senza che nessuno se ne accorga.
+        if len(result) < len(translated_text) * 0.85:
+            log(f"  ⚠ Revisione sospetta: {len(result)} caratteri contro i "
+                f"{len(translated_text)} della traduzione (perdita >15%). "
+                "Scarto la revisione e mantengo la traduzione della FASE 1 non rivista.")
+            return translated_text
+        return result
+
     try:
-        return call_with_continuation(prompt, CONTINUA_FASE2, api_key, model,
-                                       temperature=0.2, top_p=0.70)
+        return _safe_call(prompt)
     except GeminiError as e:
         log(f"  ⚠ Revisione su testo integrale fallita ({e}). "
             "Provo senza il testo originale a fianco (solo fluidità/refusi).")
@@ -765,8 +791,7 @@ def fase2_revisione(original_text: str, translated_text: str, api_key: str, mode
             testo_originale="[omesso per limiti di dimensione]",
             testo_tradotto=translated_text,
         )
-        return call_with_continuation(fallback_prompt, CONTINUA_FASE2, api_key, model,
-                                       temperature=0.2, top_p=0.70)
+        return _safe_call(fallback_prompt)
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -1125,7 +1150,7 @@ def main() -> None:
     trans1 = load_step(work_dir, "01_traduzione") if resuming else None
     if trans1 is None:
         trans1 = fase1_traduzione(original_text, api_key, args.model, args.author,
-                                   args.title, args.chunk_chars)
+                                   args.title, args.chunk_chars, work_dir, resuming)
         save_step(work_dir, "01_traduzione", trans1)
     log(f"  ✓ {word_count(trans1)} parole tradotte.")
 
