@@ -31,7 +31,7 @@ const categoryMetadata = {
     evocativa: 'Dove il mondo visibile finisce, le storie cominciano davvero.',
     scene: 'moon',
     cta: 'Scopri tutti i racconti di questa atmosfera',
-    href: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/racconti?categoria=folklore`
+    href: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/categorie/folklore-e-fantasmi`
   },
   romanzo: {
     eyebrow: "Romanzo dell'Io",
@@ -39,7 +39,7 @@ const categoryMetadata = {
     evocativa: 'Confessioni, vergogna, desideri e malinconie. La malinconia come lingua madre.',
     scene: 'rain',
     cta: 'Esplora tutti i racconti di questa voce',
-    href: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/racconti?categoria=romanzo`
+    href: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/categorie/romanzo-dell-io`
   },
   modernismo: {
     eyebrow: 'Modernismo',
@@ -47,7 +47,7 @@ const categoryMetadata = {
     evocativa: 'Città immense, vite smarrite. Il mondo cambia più in fretta delle persone.',
     scene: 'city',
     cta: 'Entra nel labirinto di questi racconti',
-    href: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/racconti?categoria=modernismo`
+    href: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/categorie/modernismo`
   },
   naturalismo: {
     eyebrow: 'Naturalismo',
@@ -55,7 +55,7 @@ const categoryMetadata = {
     evocativa: 'Fame, inverno, desideri troppo grandi per vite troppo piccole.',
     scene: 'branch',
     cta: 'Leggi tutti i racconti di questa terra',
-    href: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/racconti?categoria=naturalismo`
+    href: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/categorie/naturalismo`
   },
   eroguro: {
     eyebrow: 'Ero-Guro & Giallo',
@@ -63,7 +63,7 @@ const categoryMetadata = {
     evocativa: 'Desiderio, ossessione e il fascino dell\'irreparabile.',
     scene: 'lantern',
     cta: 'Attraversa l\'ombra di questi racconti',
-    href: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/racconti?categoria=eroguro`
+    href: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/categorie/ero-guro-e-giallo`
   }
 };
 
@@ -73,8 +73,10 @@ Object.entries(categoryMetadata).forEach(([key, meta]) => {
     .filter(r => mapCategoryToKey(r.data.category) === key)
     .map(r => ({
       titolo: r.data.title,
+      autore: r.data.author || '',
       teaser: r.data.excerpt || r.data.description,
       minuti: r.data.readTime || 6,
+      cover: r.data.heroImage ? `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${r.data.heroImage.replace(/^\//, '')}` : '',
       slug: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/racconti/${r.id}`
     }));
 
@@ -220,62 +222,86 @@ h1 .word span {
   transition: transform 1s cubic-bezier(0.16,1,0.3,1), opacity 0.8s ease;
 }
 
-/* Kanji — top right */
-.kanji-block {
-  top: 8vh;
-  right: 7vw;
-  text-align: right;
-  
-}
-
-.kanji {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(48px, 8vw, 110px);
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(26,20,16,0.18);
-  line-height: 1;
-  display: block;
-  opacity: 0;
-  transition: opacity 1.5s ease;
-}
-
-.kanji-sub {
+.hero-tagline {
   font-family: 'EB Garamond', serif;
   font-style: italic;
-  font-size: clamp(10px, 0.9vw, 12px);
-  letter-spacing: 0.28em;
-  color: rgba(26,20,16,0.3);
-  text-transform: uppercase;
-  display: block;
-  margin-top: 6px;
-  opacity: 0;
-  transition: opacity 1.5s ease;
-}
-
-/* Subtitle line */
-.sub-line {
-  margin-top: 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
+  font-size: clamp(13px, 1.25vw, 17px);
+  color: var(--blood);
+  letter-spacing: 0.02em;
+  margin-top: 12px;
+  line-height: 1.35;
   opacity: 0;
   transition: opacity 1.4s ease;
 }
 
-.sub-line::before {
-  content: '';
-  display: block;
-  width: 32px; height: 1px;
-  background: var(--blood);
-  opacity: 0.7;
+/* ─── NAVIGAZIONE ─── */
+nav#navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  padding: 1.4rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease, padding 0.3s ease;
+  border-bottom: 1px solid transparent;
+  pointer-events: auto;
 }
-
-.sub-line span {
+nav#navbar.scrolled {
+  background: rgba(244, 239, 230, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom-color: rgba(26, 20, 16, 0.1);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  padding: 1rem 3rem;
+}
+.nav-logo {
+  font-family: 'Noto Serif JP', 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 300;
+  color: var(--ink);
+  text-decoration: none;
+  letter-spacing: 0.14em;
+  opacity: 0.85;
+  transition: opacity 0.3s, color 0.3s;
+}
+.nav-logo:hover {
+  opacity: 1;
+  color: var(--blood);
+}
+.nav-links {
+  display: flex;
+  gap: 2.2rem;
+  list-style: none;
+  align-items: center;
+}
+.nav-links a {
   font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-size: clamp(13px, 1.3vw, 16px);
-  color: rgba(26,20,16,0.45);
-  letter-spacing: 0.04em;
+  font-size: 0.84rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  opacity: 0.65;
+  transition: opacity 0.25s, color 0.25s;
+  position: relative;
+  padding: 4px 0;
+}
+.nav-links a:hover {
+  opacity: 1;
+  color: var(--blood);
+}
+.nav-links a.active {
+  opacity: 1;
+  color: var(--blood);
+}
+.nav-links a.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: var(--blood);
+  opacity: 0.8;
 }
 
 /* Corner marks */
@@ -290,6 +316,66 @@ h1 .word span {
 .corner-tr { top: 28px; right: 36px; border-top: 1px solid rgba(26,20,16,0.2); border-right: 1px solid rgba(26,20,16,0.2); }
 .corner-bl { bottom: 28px; left: 36px; border-bottom: 1px solid rgba(26,20,16,0.2); border-left: 1px solid rgba(26,20,16,0.2); }
 .corner-br { bottom: 28px; right: 36px; border-bottom: 1px solid rgba(26,20,16,0.2); border-right: 1px solid rgba(26,20,16,0.2); }
+
+/* Responsive Hero on Mobile */
+@media (max-width: 768px) {
+  nav#navbar {
+    padding: 0.9rem 1.25rem;
+  }
+  nav#navbar.scrolled {
+    padding: 0.75rem 1.25rem;
+  }
+  .nav-logo {
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+  }
+  .nav-links {
+    gap: 1.1rem;
+  }
+  .nav-links a {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+  }
+
+  #hero {
+    height: calc(25vh + 235px);
+    min-height: 440px;
+  }
+
+  .corner {
+    display: none !important;
+  }
+
+  .title-block {
+    bottom: auto;
+    top: 25vh;
+    left: 24px;
+    right: 24px;
+  }
+
+  .eyebrow {
+    font-size: 10.5px;
+    letter-spacing: 0.24em;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-size: clamp(38px, 11vw, 54px);
+    line-height: 0.92;
+  }
+
+  .hero-tagline {
+    font-size: clamp(13px, 3.8vw, 15px);
+    margin-top: 8px;
+  }
+
+  .cta {
+    bottom: auto;
+    top: calc(25vh + 158px);
+    left: 24px;
+    right: auto;
+  }
+}
 
 /* CTA */
 .cta {
@@ -317,41 +403,6 @@ h1 .word span {
 .cta a:hover {
   color: var(--blood);
   border-color: var(--blood);
-}
-
-/* Scroll line */
-.scroll-hint {
-  position: absolute;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 20;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  opacity: 0;
-  transition: opacity 1s ease;
-}
-
-.scroll-hint span {
-  font-family: 'EB Garamond', serif;
-  font-size: 9px;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: rgba(26,20,16,0.25);
-}
-
-.scroll-bar {
-  width: 1px;
-  height: 40px;
-  background: linear-gradient(to bottom, rgba(184,40,30,0.5), transparent);
-  animation: pulse 2.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%,100% { opacity: 0.4; }
-  50%      { opacity: 1; }
 }
 
 /* Show class */
@@ -1278,6 +1329,35 @@ h1 .word span {
   color: rgba(240,235,226,0.16);
 }
 
+@media (max-width: 768px) {
+  #racconto-giorno {
+    height: auto;
+    min-height: auto;
+    padding: 60px 0 50px;
+    align-items: center;
+  }
+  .rg-content {
+    padding: 0 6vw;
+  }
+  .rg-kanji-deco {
+    font-size: clamp(80px, 26vw, 150px);
+    top: 20px;
+    right: 16px;
+  }
+  .rg-title {
+    font-size: clamp(38px, 11vw, 56px);
+    margin-bottom: 20px;
+  }
+  .rg-phrase {
+    font-size: 16px;
+    margin-bottom: 24px;
+    padding-left: 16px;
+  }
+  .rg-bottom {
+    gap: 20px;
+  }
+}
+
 /* ══════════════════════════════════════════════════
    ⑤ LA MAPPA DELLE STORIE
 ══════════════════════════════════════════════════ */
@@ -1538,6 +1618,27 @@ h1 .word span {
   padding-bottom: 3px;
   display: inline-block;
   transition: color 0.3s, border-color 0.3s;
+}
+
+@media (max-width: 768px) {
+  #mappa-storie {
+    min-height: auto;
+    padding: 40px 0 35px;
+  }
+  .map-header {
+    margin-bottom: 18px;
+    padding: 0 4vw;
+  }
+  .map-title {
+    font-size: clamp(30px, 8.5vw, 44px);
+  }
+  .map-subtitle {
+    font-size: 14px;
+    margin-top: 6px;
+  }
+  .map-body {
+    padding: 0 2vw;
+  }
 }
 /* ══════════════════════════════════════════════════
    NUOVE SEZIONI HOMEPAGE
@@ -1861,60 +1962,73 @@ h1 .word span {
 
 #cat-modal {
   position: fixed;
-  inset: 0;
-  z-index: 900;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 20px;
+  box-sizing: border-box;
 }
-#cat-modal[hidden] { display: none; }
+#cat-modal[hidden] { display: none !important; }
 
 /* Backdrop */
 .cm-backdrop {
   position: absolute;
   inset: 0;
   background: rgba(10,8,6,0);
-  transition: background 0.6s ease;
+  transition: background 0.4s ease, backdrop-filter 0.4s ease;
   cursor: pointer;
 }
 #cat-modal.cm-open .cm-backdrop {
-  background: rgba(10,8,6,0.72);
+  background: rgba(10,8,6,0.85);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 /* Pannello centrale cinematografico */
 .cm-panel {
   position: relative;
-  width: min(820px, 100vw);
-  max-height: 85vh;
+  width: min(680px, calc(100vw - 32px));
+  max-height: 80vh;
+  max-height: 80dvh;
   background: #F8F5EF;
   border: 1px solid rgba(26,20,16,0.15);
-  box-shadow: 0 20px 50px rgba(10,8,6,0.45);
+  box-shadow: 0 20px 50px rgba(10,8,6,0.55);
   overflow-y: auto;
   overflow-x: hidden;
-  transform: scale(0.92) translateY(15px);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  transform: scale(0.95);
   opacity: 0;
-  transition: transform 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.5s ease;
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.35s ease;
   display: flex;
   flex-direction: column;
   scrollbar-width: thin;
   scrollbar-color: rgba(24,24,24,0.12) transparent;
-  border-radius: 4px;
+  border-radius: 8px;
+  margin: 0 !important;
+  flex-shrink: 0;
 }
 #cat-modal.cm-open .cm-panel {
-  transform: scale(1) translateY(0);
+  transform: scale(1);
   opacity: 1;
 }
 
 /* Tasto chiudi */
 .cm-close {
   position: absolute;
-  top: 20px;
-  right: 22px;
-  width: 38px;
-  height: 38px;
-  background: rgba(10,8,6,0.35);
-  border: none;
+  top: 16px;
+  right: 18px;
+  width: 34px;
+  height: 34px;
+  background: rgba(10,8,6,0.45);
+  border: 1px solid rgba(240,235,226,0.15);
   cursor: pointer;
   z-index: 20;
   display: flex;
@@ -1928,25 +2042,25 @@ h1 .word span {
 }
 .cm-close-line {
   display: block;
-  width: 18px;
+  width: 16px;
   height: 1px;
-  background: rgba(240,235,226,0.85);
+  background: rgba(240,235,226,0.9);
   transform-origin: center;
   transition: background 0.3s;
 }
 .cm-close-line:first-child { transform: rotate(45deg) translateY(0.5px); }
 .cm-close-line:last-child  { transform: rotate(-45deg) translateY(-0.5px); }
 .cm-close:hover {
-  background: rgba(10,8,6,0.6);
+  background: rgba(10,8,6,0.7);
 }
-.cm-close:hover .cm-close-line { background: rgba(240,235,226,1); }
+.cm-close:hover .cm-close-line { background: #fff; }
 
 /* ── Hero categoria ── */
 .cm-hero {
   position: relative;
   width: 100%;
-  height: 38vh;
-  min-height: 265px;
+  height: 28vh;
+  min-height: 180px;
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -1971,45 +2085,31 @@ h1 .word span {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 0 40px 36px;
-}
-.cm-hero-eyebrow {
-  font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-size: 10px;
-  letter-spacing: 0.38em;
-  text-transform: uppercase;
-  color: rgba(240,235,226,0.45);
-  display: block;
-  margin-bottom: 10px;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.9s ease 0.3s, transform 0.9s ease 0.3s;
+  padding: 0 36px 28px;
 }
 .cm-hero-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(38px, 6vw, 72px);
+  font-size: clamp(32px, 5vw, 56px);
   font-weight: 900;
-  line-height: 0.88;
+  line-height: 0.95;
   color: #F0EBE2;
   letter-spacing: -0.02em;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 1s ease 0.5s, transform 1s cubic-bezier(0.16,1,0.3,1) 0.5s;
+  transform: translateY(10px);
+  transition: opacity 0.8s ease 0.3s, transform 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s;
 }
 .cm-hero-evocativa {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
-  font-size: clamp(14px, 1.8vw, 18px);
-  line-height: 1.55;
-  color: rgba(240,235,226,0.55);
-  max-width: 420px;
+  font-size: clamp(13px, 1.6vw, 17px);
+  line-height: 1.45;
+  color: rgba(240,235,226,0.7);
+  max-width: 460px;
   opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 1s ease 0.75s, transform 1s ease 0.75s;
+  transform: translateY(6px);
+  transition: opacity 0.8s ease 0.45s, transform 0.8s ease 0.45s;
 }
-#cat-modal.cm-open .cm-hero-eyebrow,
 #cat-modal.cm-open .cm-hero-title,
 #cat-modal.cm-open .cm-hero-evocativa {
   opacity: 1;
@@ -2018,19 +2118,18 @@ h1 .word span {
 
 /* ── Corpo modale ── */
 .cm-body {
-  padding: 44px 40px 60px;
-  flex: 1;
+  padding: 32px 36px 40px;
 }
 
 .cm-section-label {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 32px;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 .cm-label-line {
   display: block;
-  width: 28px;
+  width: 24px;
   height: 1px;
   background: #9E2A2B;
   opacity: 0.6;
@@ -2040,9 +2139,9 @@ h1 .word span {
   font-family: 'EB Garamond', serif;
   font-style: italic;
   font-size: 11px;
-  letter-spacing: 0.34em;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: rgba(24,24,24,0.35);
+  color: rgba(24,24,24,0.4);
 }
 
 /* Racconti nel modale */
@@ -2052,75 +2151,63 @@ h1 .word span {
   gap: 0;
 }
 .cm-story {
-  display: flex;
-  align-items: flex-start;
-  gap: 18px;
-  padding: 20px 0;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
   border-bottom: 1px solid rgba(24,24,24,0.07);
   text-decoration: none;
-  transition: opacity 0.3s;
+  transition: opacity 0.3s, transform 0.25s ease;
 }
 .cm-story:first-child { border-top: 1px solid rgba(24,24,24,0.07); }
-.cm-story:hover { opacity: 0.72; }
+.cm-story:hover {
+  opacity: 0.75;
+  transform: translateX(4px);
+}
 
 .cm-story-art {
-  width: 56px;
-  height: 72px;
+  width: 44px;
+  height: 44px;
   flex-shrink: 0;
   overflow: hidden;
   background: #100d0a;
+  border-radius: 4px;
+  border: 1px solid rgba(24,24,24,0.09);
 }
+.cm-story-art img,
 .cm-story-art canvas {
   width: 100%;
   height: 100%;
   display: block;
+  object-fit: cover;
 }
 .cm-story-info {
-  flex: 1;
-  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-}
-.cm-story-meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.cm-story-cat {
-  font-family: 'EB Garamond', serif;
-  font-style: italic;
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: #9E2A2B;
-}
-.cm-story-time {
-  font-family: 'EB Garamond', serif;
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: rgba(24,24,24,0.25);
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
 }
 .cm-story-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(15px, 1.4vw, 17px);
+  font-size: clamp(14px, 1.35vw, 16px);
   font-weight: 700;
   color: #181818;
-  line-height: 1.15;
+  line-height: 1.22;
 }
-.cm-story-teaser {
-  font-family: 'Cormorant Garamond', serif;
+.cm-story-author {
+  font-family: 'EB Garamond', serif;
   font-style: italic;
-  font-size: clamp(12px, 1.1vw, 14px);
-  line-height: 1.5;
-  color: rgba(24,24,24,0.42);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: rgba(24,24,24,0.48);
 }
 
 /* CTA finale */
 .cm-footer {
-  margin-top: 44px;
-  padding-top: 28px;
+  margin-top: 28px;
+  padding-top: 20px;
   border-top: 1px solid rgba(24,24,24,0.07);
 }
 .cm-cta {
@@ -2159,10 +2246,84 @@ h1 .word span {
   z-index: 0;
 }
 
+/* ══════════════════════════════════════════════════
+   RESPONSIVE MODALE (MOBILE)
+══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  #cat-modal {
+    padding: 16px 12px;
+    align-items: center;
+    justify-content: center;
+  }
+  .cm-backdrop {
+    touch-action: none;
+  }
+  .cm-panel {
+    width: calc(100vw - 24px);
+    max-width: 440px;
+    max-height: 80vh;
+    max-height: 80dvh;
+    border-radius: 10px;
+    margin: 0 !important;
+  }
+  .cm-hero {
+    height: 110px;
+    min-height: 110px;
+    max-height: 110px;
+  }
+  .cm-hero-content {
+    padding: 0 16px 12px;
+  }
+  .cm-hero-title {
+    font-size: 21px;
+    margin-bottom: 3px;
+  }
+  .cm-hero-evocativa {
+    font-size: 11.5px;
+    line-height: 1.3;
+    max-width: 95%;
+  }
+  .cm-close {
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+  }
+  .cm-body {
+    padding: 12px 16px 16px;
+  }
+  .cm-section-label {
+    margin-bottom: 8px;
+    gap: 6px;
+  }
+  .cm-label-text {
+    font-size: 10px;
+  }
+  .cm-footer {
+    margin-top: 10px;
+    padding-top: 8px;
+  }
+  .cm-cta {
+    font-size: 13.5px;
+  }
+}
+
 .panel-cta:hover { color: var(--blood); border-color: rgba(184,40,30,0.4); }
 </style>
 </head>
 <body>
+
+<!-- ══════════════════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════════════════ -->
+<nav id="navbar">
+  <a href={import.meta.env.BASE_URL} class="nav-logo">物の哀れ</a>
+  <ul class="nav-links">
+    <li><a href={import.meta.env.BASE_URL} class="active">Home</a></li>
+    <li><a href={`${import.meta.env.BASE_URL}categorie`}>Categorie</a></li>
+    <li><a href={`${import.meta.env.BASE_URL}autori`}>Autori</a></li>
+  </ul>
+</nav>
 
 <!-- ══════════════════════════════════════════════════
      ① HERO
@@ -2177,11 +2338,7 @@ h1 .word span {
   <div class="corner corner-bl"></div>
   <div class="corner corner-br"></div>
 
-  <!-- Kanji top-right -->
-  <div class="hero-text kanji-block">
-    <span class="kanji">声</span>
-    <span class="kanji-sub">Voci del<br>Sol Levante</span>
-  </div>
+
 
   <!-- Main title bottom-left -->
   <div class="hero-text title-block">
@@ -2190,7 +2347,7 @@ h1 .word span {
       <span class="word"><span>Mono&nbsp;no</span></span><br>
       <span class="word"><span><em>aware</em></span></span>
     </h1>
-    
+    <p class="hero-tagline">La struggente bellezza delle cose destinate a scomparire</p>
   </div>
 
   <!-- CTA -->
@@ -2198,11 +2355,7 @@ h1 .word span {
     <a href="#racconto-giorno">Leggi i racconti</a>
   </div>
 
-  <!-- Scroll hint -->
-  <div class="scroll-hint">
-    <span>Scorri</span>
-    <div class="scroll-bar"></div>
-  </div>
+
 
 </section>
 
@@ -2210,18 +2363,7 @@ h1 .word span {
 <section id="mono-aware-cinematic">
   <div class="mna-cin-inner">
 
-    <!-- FASE 1 — Kanji -->
-    <div class="mna-kanji-phase" id="mna-p1">
-      <span class="mna-kanji-big" aria-label="Mono no aware in giapponese">物の哀れ</span>
-    </div>
-
-    <!-- FASE 2 — Romaji + tagline -->
-    <div class="mna-title-phase" id="mna-p2">
-      <span class="mna-romaji">Mono no aware</span>
-      <span class="mna-tagline">La struggente bellezza delle cose destinate a scomparire</span>
-    </div>
-
-    <!-- FASE 3 — Manifesto -->
+    <!-- Manifesto -->
     <div class="mna-manifesto-phase" id="mna-p3">
       <p class="mna-manifesto">Molti di questi racconti non esistono in traduzioni italiane moderne, oppure sopravvivono in versioni antiquate. Questo progetto nasce dal desiderio di riportarli alla luce e renderli di nuovo vivi, leggibili, fedeli al loro tono. Per farlo uso anche strumenti contemporanei, compresa l'intelligenza artificiale, come supporto alla ricerca e alla ricostruzione visiva dell'immaginario dei testi.</p>
     </div>
@@ -2325,7 +2467,6 @@ h1 .word span {
       <canvas class="cm-hero-canvas" id="cm-hero-canvas"></canvas>
       <div class="cm-hero-vignette"></div>
       <div class="cm-hero-content">
-        <span class="cm-hero-eyebrow" id="cm-eyebrow"></span>
         <h2 class="cm-hero-title" id="cm-title"></h2>
         <p class="cm-hero-evocativa" id="cm-evocativa"></p>
       </div>
@@ -2743,12 +2884,13 @@ const PHASE = {
 // ─────────────────────────────────────────────
 //  CANVAS SETUP
 // ─────────────────────────────────────────────
+const heroEl  = document.getElementById('hero');
 const canvas  = document.getElementById('c-brush');
 const ctx     = canvas.getContext('2d');
 
 function resize() {
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.width  = heroEl ? heroEl.clientWidth : window.innerWidth;
+  canvas.height = heroEl ? heroEl.clientHeight : window.innerHeight;
 }
 resize();
 window.addEventListener('resize', () => { resize(); });
@@ -2787,15 +2929,28 @@ resizeMask();
 window.addEventListener('resize', resizeMask);
 
 function buildStroke(w, h) {
-  const cx = w * 0.5, cy = h * 0.5;
+  const isMobile = w <= 768;
+  const cx = w * 0.5;
+  const cy = isMobile ? Math.min(h * 0.20, 180) : h * 0.5;
   const pts = [];
   const count = 18;
-  for (let i = 0; i < count; i++) {
-    const t = i / (count - 1);
-    const x = w * 0.12 + t * w * 0.76 + (Math.random() - 0.5) * w * 0.08;
-    const y = cy + Math.sin(t * Math.PI * 1.8) * h * 0.18 + (Math.random() - 0.5) * h * 0.10;
-    const r = (h * 0.32) * Math.sin(t * Math.PI) * (0.6 + Math.random() * 0.5);
-    pts.push({ x, y, r });
+  if (isMobile) {
+    const strokeW = w * 1.08;
+    for (let i = 0; i < count; i++) {
+      const t = i / (count - 1);
+      const x = -w * 0.04 + t * strokeW + (Math.random() - 0.5) * (w * 0.03);
+      const y = cy + Math.sin(t * Math.PI * 1.8) * (h * 0.07) + (Math.random() - 0.5) * 16;
+      const r = (w * 0.40) * Math.sin(t * Math.PI) * (0.65 + Math.random() * 0.45);
+      pts.push({ x, y, r: Math.max(0.1, r) });
+    }
+  } else {
+    for (let i = 0; i < count; i++) {
+      const t = i / (count - 1);
+      const x = w * 0.12 + t * w * 0.76 + (Math.random() - 0.5) * w * 0.08;
+      const y = cy + Math.sin(t * Math.PI * 1.8) * h * 0.18 + (Math.random() - 0.5) * h * 0.10;
+      const r = (h * 0.32) * Math.sin(t * Math.PI) * (0.6 + Math.random() * 0.5);
+      pts.push({ x, y, r: Math.max(0.1, r) });
+    }
   }
   return pts;
 }
@@ -2840,11 +2995,12 @@ function drawMask(prog) {
 
   for (let i = 0; i < visible; i++) {
     const p    = strokePts[i];
+    if (!p) continue;
     const frac = (i === visible - 1) ? (prog * strokePts.length - i) : 1;
     const r    = p.r * frac;
-    if (r <= 0) continue;
+    if (r <= 0.01) continue;
 
-    const grd = maskCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r);
+    const grd = maskCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, Math.max(0.1, r));
     grd.addColorStop(0,   'rgba(0,0,0,1)');
     grd.addColorStop(0.55,'rgba(0,0,0,0.92)');
     grd.addColorStop(0.82,'rgba(0,0,0,0.5)');
@@ -2853,7 +3009,7 @@ function drawMask(prog) {
     maskCtx.globalCompositeOperation = 'source-over';
     maskCtx.fillStyle = grd;
     maskCtx.beginPath();
-    maskCtx.arc(p.x, p.y, r, 0, Math.PI * 2);
+    maskCtx.arc(p.x, p.y, Math.max(0.1, r), 0, Math.PI * 2);
     maskCtx.fill();
   }
 }
@@ -2871,11 +3027,22 @@ function drawFrame(imageAlpha, maskProg) {
 
   const iw = img.naturalWidth  || img.width;
   const ih = img.naturalHeight || img.height;
-  const scale = Math.max(canvas.width / iw, canvas.height / ih) * 0.85;
-  const dw = iw * scale;
-  const dh = ih * scale;
-  const dx = (canvas.width  - dw) / 2;
-  const dy = (canvas.height - dh) / 2;
+  const isMobile = canvas.width <= 768;
+
+  let scale, dx, dy;
+  if (isMobile) {
+    scale = (canvas.width / iw) * 1.05;
+    const dw = iw * scale;
+    const dh = ih * scale;
+    dx = (canvas.width  - dw) / 2;
+    dy = Math.max(0, (canvas.height * 0.18) - (dh / 2));
+  } else {
+    scale = Math.max(canvas.width / iw, canvas.height / ih) * 0.85;
+    const dw = iw * scale;
+    const dh = ih * scale;
+    dx = (canvas.width  - dw) / 2;
+    dy = (canvas.height - dh) / 2;
+  }
 
   const imgOff = document.createElement('canvas');
   imgOff.width  = canvas.width;
@@ -2883,7 +3050,7 @@ function drawFrame(imageAlpha, maskProg) {
   const iCtx = imgOff.getContext('2d');
 
   iCtx.globalAlpha = 1;
-  iCtx.drawImage(img, dx, dy, dw, dh);
+  iCtx.drawImage(img, dx, dy, iw * scale, ih * scale);
   iCtx.globalCompositeOperation = 'destination-in';
   iCtx.drawImage(maskCanvas, 0, 0);
 
@@ -2964,16 +3131,9 @@ function revealUI() {
   });
 
   setTimeout(() => {
-    const kanjiEl = document.querySelector('.kanji');
-    if (kanjiEl) kanjiEl.classList.add('show');
-    const kanjiSubEl = document.querySelector('.kanji-sub');
-    if (kanjiSubEl) kanjiSubEl.classList.add('show');
-  }, 600);
-
-  setTimeout(() => {
     const el = document.querySelector('.eyebrow');
     if (el) el.classList.add('show');
-  }, 800);
+  }, 600);
 
   const words = document.querySelectorAll('h1 .word span');
   words.forEach((w, i) => {
@@ -2984,6 +3144,10 @@ function revealUI() {
   });
 
   setTimeout(() => {
+    const el = document.querySelector('.hero-tagline');
+    if (el) el.classList.add('show');
+  }, 1600);
+  setTimeout(() => {
     const el = document.querySelector('.sub-line');
     if (el) el.classList.add('show');
   }, 1900);
@@ -2991,11 +3155,19 @@ function revealUI() {
     const el = document.querySelector('.cta');
     if (el) el.classList.add('show');
   }, 2200);
-  setTimeout(() => {
-    const el = document.querySelector('.scroll-hint');
-    if (el) el.classList.add('show');
-  }, 2800);
 }
+
+// ─────────────────────────────────────────────
+//  NAVBAR SCROLL EFFECT
+// ─────────────────────────────────────────────
+const navEl = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 40) {
+    navEl && navEl.classList.add('scrolled');
+  } else {
+    navEl && navEl.classList.remove('scrolled');
+  }
+}, { passive: true });
 
 // ─────────────────────────────────────────────
 //  INIT HERO
@@ -3038,9 +3210,7 @@ loadImages(IMAGES).then(imgs => {
     }, { threshold: root || 0.2 }).observe(el);
   }
 
-  observeEl('mna-p1', 'mna-visible', 0.3);
-  observeEl('mna-p2', 'mna-visible', 0.3);
-  observeEl('mna-p3', 'mna-visible', 0.25);
+  observeEl('mna-p3', 'mna-visible', 0.2);
 
   /* ── Ultimi Racconti reveal ── */
   const urHeader = document.getElementById('ur-header');
@@ -3306,9 +3476,9 @@ function drawModalHero(canvas, scene) {
 
 /* ── Mini art storie nel modale ── */
 function drawStoryArt(canvas, scene) {
-  canvas.width = 56; canvas.height = 72;
+  canvas.width = 36; canvas.height = 36;
   const ctx = canvas.getContext('2d');
-  const w = 56, h = 72;
+  const w = 36, h = 36;
   const mini = {
     moon()   { ctx.fillStyle='#070810'; ctx.fillRect(0,0,w,h); const g=ctx.createRadialGradient(w*.5,h*.3,0,w*.5,h*.3,h*.4); g.addColorStop(0,'rgba(200,215,248,.45)'); g.addColorStop(1,'rgba(0,0,0,0)'); ctx.fillStyle=g; ctx.fillRect(0,0,w,h); ctx.beginPath(); ctx.arc(w*.5,h*.28,h*.09,0,Math.PI*2); ctx.fillStyle='rgba(220,228,252,.6)'; ctx.fill(); },
     rain()   { ctx.fillStyle='#06080f'; ctx.fillRect(0,0,w,h); const g=ctx.createRadialGradient(w*.5,h*.4,0,w*.5,h*.4,h*.38); g.addColorStop(0,'rgba(185,135,48,.18)'); g.addColorStop(1,'rgba(0,0,0,0)'); ctx.fillStyle=g; ctx.fillRect(0,0,w,h); },
@@ -3324,8 +3494,7 @@ function populateModal(catKey) {
   const d = CAT_DATA[catKey];
   if (!d) return;
 
-  document.getElementById('cm-eyebrow').textContent = d.eyebrow;
-  document.getElementById('cm-title').textContent   = d.title;
+  document.getElementById('cm-title').textContent   = d.eyebrow;
   document.getElementById('cm-evocativa').textContent = d.evocativa;
 
   const heroCanvas = document.getElementById('cm-hero-canvas');
@@ -3333,39 +3502,51 @@ function populateModal(catKey) {
 
   const storiesEl = document.getElementById('cm-stories');
   storiesEl.innerHTML = '';
+  storiesEl.style.cssText = 'display:flex;flex-direction:column;gap:0;';
+
   d.storie.forEach(s => {
     const a = document.createElement('a');
-    a.className = 'cm-story';
     a.href = s.slug;
+    a.style.cssText = 'display:grid;grid-template-columns:36px 1fr;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid rgba(24,24,24,0.07);text-decoration:none;transition:opacity 0.2s;';
+    a.addEventListener('mouseenter', () => a.style.opacity = '0.7');
+    a.addEventListener('mouseleave', () => a.style.opacity = '1');
+
     const artDiv = document.createElement('div');
-    artDiv.className = 'cm-story-art';
-    const c = document.createElement('canvas');
-    artDiv.appendChild(c);
+    artDiv.style.cssText = 'width:36px;height:36px;flex-shrink:0;overflow:hidden;background:#100d0a;border-radius:4px;border:1px solid rgba(24,24,24,0.09);';
+
+    if (s.cover) {
+      const img = document.createElement('img');
+      img.src = s.cover;
+      img.alt = s.titolo;
+      img.loading = 'lazy';
+      img.style.cssText = 'width:36px;height:36px;display:block;object-fit:cover;';
+      artDiv.appendChild(img);
+    } else {
+      const c = document.createElement('canvas');
+      c.width = 36; c.height = 36;
+      c.style.cssText = 'width:36px;height:36px;display:block;';
+      artDiv.appendChild(c);
+      drawStoryArt(c, d.scene);
+    }
+
     const infoDiv = document.createElement('div');
-    infoDiv.className = 'cm-story-info';
-    const metaDiv = document.createElement('div');
-    metaDiv.className = 'cm-story-meta';
-    const catSpan = document.createElement('span');
-    catSpan.className = 'cm-story-cat';
-    catSpan.textContent = d.eyebrow;
-    const timeSpan = document.createElement('span');
-    timeSpan.className = 'cm-story-time';
-    timeSpan.textContent = s.minuti + ' min';
-    metaDiv.appendChild(catSpan);
-    metaDiv.appendChild(timeSpan);
+    infoDiv.style.cssText = 'display:flex;flex-direction:column;justify-content:center;gap:1px;min-width:0;';
+
     const titleDiv = document.createElement('div');
-    titleDiv.className = 'cm-story-title';
+    titleDiv.style.cssText = "font-family:'Playfair Display',serif;font-size:13.5px;font-weight:700;color:#181818;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;";
     titleDiv.textContent = s.titolo;
-    const teaserDiv = document.createElement('div');
-    teaserDiv.className = 'cm-story-teaser';
-    teaserDiv.textContent = s.teaser;
-    infoDiv.appendChild(metaDiv);
     infoDiv.appendChild(titleDiv);
-    infoDiv.appendChild(teaserDiv);
+
+    if (s.autore) {
+      const authorDiv = document.createElement('div');
+      authorDiv.style.cssText = "font-family:'EB Garamond',serif;font-style:italic;font-size:11px;letter-spacing:0.03em;color:rgba(24,24,24,0.5);";
+      authorDiv.textContent = s.autore;
+      infoDiv.appendChild(authorDiv);
+    }
+
     a.appendChild(artDiv);
     a.appendChild(infoDiv);
     storiesEl.appendChild(a);
-    drawStoryArt(c, d.scene);
   });
 
   const ctaEl = document.getElementById('cm-cta');
@@ -3377,12 +3558,19 @@ function populateModal(catKey) {
 const modal    = document.getElementById('cat-modal');
 const backdrop = document.getElementById('cm-backdrop');
 const closeBtn = document.getElementById('cm-close');
+const cmPanel  = document.getElementById('cm-panel');
 let lastFocus  = null;
+let savedScrollY = 0;
 
 function openModal(catKey) {
   populateModal(catKey);
   modal.hidden = false;
+
+  /* Lock background scroll */
+  document.documentElement.style.overflow = 'hidden';
   document.body.style.overflow = 'hidden';
+
+  if (cmPanel) cmPanel.scrollTop = 0;
   requestAnimationFrame(() => {
     requestAnimationFrame(() => { modal.classList.add('cm-open'); });
   });
@@ -3392,7 +3580,11 @@ function openModal(catKey) {
 
 function closeModal() {
   modal.classList.remove('cm-open');
+
+  /* Restore background scroll */
+  document.documentElement.style.overflow = '';
   document.body.style.overflow = '';
+
   setTimeout(() => {
     modal.hidden = true;
     if (lastFocus) lastFocus.focus();
@@ -3408,6 +3600,13 @@ closeBtn.addEventListener('click', closeModal);
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !modal.hidden) closeModal();
 });
+
+/* Block touch-scroll on everything EXCEPT the panel itself */
+modal.addEventListener('touchmove', function(e) {
+  if (!cmPanel || !cmPanel.contains(e.target)) {
+    e.preventDefault();
+  }
+}, { passive: false });
 
 modal.addEventListener('keydown', e => {
   if (e.key !== 'Tab') return;
@@ -3487,14 +3686,15 @@ modal.addEventListener('keydown', e => {
   // Draw irregular Sumi-e style organic spot — wind-stretched ellipse, not a circle
   const INK = '148, 136, 120';
   function drawSumiSpot(ctx, cx, cy, radius, alpha) {
+    if (radius <= 0 || alpha <= 0) return;
     ctx.save();
     ctx.translate(cx, cy);
     // Rotate slightly in wind direction (mostly horizontal)
     ctx.rotate(-0.15 + (Math.sin(cx * 0.003) * 0.12));
     
     // Stretched horizontally like ink blown by wind
-    const rx = radius * (1.6 + Math.sin(cx * 0.007) * 0.3); // wide
-    const ry = radius * (0.55 + Math.cos(cy * 0.009) * 0.1);  // flat
+    const rx = Math.max(0.1, radius * (1.6 + Math.sin(cx * 0.007) * 0.3)); // wide
+    const ry = Math.max(0.1, radius * (0.55 + Math.cos(cy * 0.009) * 0.1));  // flat
     
     const coreGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
     coreGrad.addColorStop(0, `rgba(${INK}, ${alpha * 0.78})`);
@@ -3534,20 +3734,23 @@ modal.addEventListener('keydown', e => {
       const easeVal = 1 - Math.pow(1 - centerBlotProgress, 3);
       const currentRadius = maxRadius * easeVal;
       const currentAlpha = 0.58 * easeVal;
+      const gradR = Math.max(0.1, currentRadius * 1.3);
       
-      const g = wCtx.createRadialGradient(cx, cy, 0, cx, cy, currentRadius * 1.3);
-      g.addColorStop(0, `rgba(${INK}, ${currentAlpha * 0.28})`);
-      g.addColorStop(0.45, `rgba(${INK}, ${currentAlpha * 0.1})`);
-      g.addColorStop(1, `rgba(${INK}, 0)`);
-      
-      wCtx.save();
-      wCtx.translate(cx, cy);
-      wCtx.scale(1.4, 0.75); // slightly elliptical, not a perfect circle
-      wCtx.fillStyle = g;
-      wCtx.beginPath();
-      wCtx.arc(0, 0, currentRadius, 0, Math.PI * 2);
-      wCtx.fill();
-      wCtx.restore();
+      if (currentRadius > 0.2 && currentAlpha > 0.005) {
+        const g = wCtx.createRadialGradient(cx, cy, 0, cx, cy, gradR);
+        g.addColorStop(0, `rgba(${INK}, ${currentAlpha * 0.28})`);
+        g.addColorStop(0.45, `rgba(${INK}, ${currentAlpha * 0.1})`);
+        g.addColorStop(1, `rgba(${INK}, 0)`);
+        
+        wCtx.save();
+        wCtx.translate(cx, cy);
+        wCtx.scale(1.4, 0.75); // slightly elliptical, not a perfect circle
+        wCtx.fillStyle = g;
+        wCtx.beginPath();
+        wCtx.arc(0, 0, Math.max(0.1, currentRadius), 0, Math.PI * 2);
+        wCtx.fill();
+        wCtx.restore();
+      }
     }
 
     // Update and draw parent ink blots
@@ -3560,7 +3763,9 @@ modal.addEventListener('keydown', e => {
       const visFactor = Math.max(0, Math.min(1, (b.x + b.size * 0.5) / (w * 1.1)));
       const drawAlpha = b.alpha * visFactor;
 
-      drawSumiSpot(wCtx, b.x, b.y, b.size * 0.5, drawAlpha);
+      if (b.size > 0 && drawAlpha > 0) {
+        drawSumiSpot(wCtx, b.x, b.y, b.size * 0.5, drawAlpha);
+      }
 
       // Shedding - Fraying into smaller particles (Sfilacciamento)
       if (isVisible && Math.random() < 0.22 && drawAlpha > 0.02) {
@@ -3598,8 +3803,10 @@ modal.addEventListener('keydown', e => {
       }
 
       const drawAlpha = p.alpha * p.life;
-      const drawW = p.size * (0.3 + p.life * 0.7) * 1.8; // elongated horizontally
-      const drawH = p.size * (0.3 + p.life * 0.7) * 0.5;
+      const drawW = Math.max(0.1, p.size * (0.3 + p.life * 0.7) * 1.8); // elongated horizontally
+      const drawH = Math.max(0.1, p.size * (0.3 + p.life * 0.7) * 0.5);
+
+      if (drawAlpha <= 0.005 || drawW <= 0.1) continue;
 
       const g = wCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, drawW);
       g.addColorStop(0, `rgba(${INK}, ${drawAlpha * 0.7})`);
