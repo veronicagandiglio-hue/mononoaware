@@ -51,10 +51,10 @@ INSTALLAZIONE
 ────────────────────────────────────────────────────────────────────
 ESEMPIO
 ────────────────────────────────────────────────────────────────────
-  python traduci_racconto.py \\
-      --url "https://www.aozora.gr.jp/cards/000035/files/301_14912.html" \\
-      --author "Ryūnosuke Akutagawa" --title "Il paravento" \\
-      --year 1918 --period "Periodo Taishō"
+  python traduci_racconto.py \
+      --url "https://www.aozora.gr.jp/cards/000035/files/301_14912.html" \
+      --author "Ryūnosuke Akutagawa" --title "Il paravento" \
+      --year 1918
 
   (categoria, tag, excerpt e meta description vengono decisi dalla FASE 6
    sulle tue liste chiuse; puoi anche forzarli a mano con --category /
@@ -1008,8 +1008,6 @@ def build_markdown(args, body_text: str, oltre_text: str, category: str,
         lines.append(f'titleJp: "{yaml_escape(args.title_jp)}"')
     if args.original_title:
         lines.append(f'originalTitle: "{yaml_escape(args.original_title)}"')
-    if args.period:
-        lines.append(f'period: "{yaml_escape(args.period)}"')
     if read_time:
         lines.append(f"readTime: {read_time}")
     if args.note:
@@ -1043,7 +1041,6 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--original-title", default="", help="Titolo originale nella lingua di partenza.")
     p.add_argument("--country", default="Giappone")
     p.add_argument("--orig-lang", default="Giapponese", dest="orig_lang")
-    p.add_argument("--period", default="", help="Periodo storico (es. 'Periodo Meiji').")
     p.add_argument("--translator", default="", help="Default: nome leggibile del modello usato.")
     p.add_argument("--hero-image", default="", help='Es. "/tigre.png" (file già in public/).')
     p.add_argument("--draft", action="store_true", help="isDraft: true nel frontmatter.")

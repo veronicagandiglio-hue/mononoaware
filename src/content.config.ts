@@ -25,7 +25,6 @@ const racconti = defineCollection({
     // ─── CAMPI MIEI (tutti opzionali, con fallback)
     titleJp: z.string().optional(),
     originalTitle: z.string().optional(),
-    period: z.string().optional(),
     readTime: z.number().optional(),
     excerpt: z.string().optional(),
     heroImage: z.string().optional(),

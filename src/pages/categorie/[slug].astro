@@ -9,7 +9,6 @@ export async function getStaticPaths() {
       nome: "Romanzo dell'Io",
       nomeJp: '私小説',
       lettura: 'Watakushi Shōsetsu',
-      periodo: 'Fine Meiji · Taishō · Primo Shōwa',
       descrizione: 'Confessioni, vergogna, desideri inconfessabili e la malinconia come lingua madre. Lo scandalo intimo e lo sguardo implacabile rivolto verso il proprio abisso interiore, senza maschere né finzioni borghesi.',
       citazione: '«Non posso più vivere come un essere umano. Ho smesso di appartenere a questo mondo prima ancora di capire cosa significasse farne parte.»',
       citazioneAutore: 'Osamu Dazai',
@@ -26,7 +25,6 @@ export async function getStaticPaths() {
       nome: 'Naturalismo',
       nomeJp: '自然主義',
       lettura: 'Shizen-shugi',
-      periodo: 'Era Meiji tardo · Taishō',
       descrizione: 'Fame, contrasti sociali, desideri troppo grandi per vite troppo piccole. Lo sguardo crudo, limpido e disilluso sulla realtà umana senza concessioni, retorica o facili consolazioni morali.',
       citazione: '«La natura non si cura dei nostri dolori; essa prosegue immutabile il suo corso gelido, lasciando all\'uomo solo il peso delle proprie fatiche.»',
       citazioneAutore: 'Doppo Kunikida',
@@ -43,7 +41,6 @@ export async function getStaticPaths() {
       nome: 'Folklore e Fantasmi',
       nomeJp: '民話・怪談',
       lettura: 'Minwa & Kaidan',
-      periodo: 'Tradizione classica · Meiji · Primo Novecento',
       descrizione: 'Spiriti, metamorfosi, antiche leggende e fantasmi che rifiutano l\'oblio. Dove il mondo visibile finisce e le storie ancestrali cominciano a respirare nell\'ombra dei santuari e dei passi montani.',
       citazione: '«Chi ascolta i sussurri del vento notturno tra i canneti sa che i morti non lasciano mai davvero i luoghi in cui hanno amato o sofferto.»',
       citazioneAutore: 'Lafcadio Hearn',
@@ -60,7 +57,6 @@ export async function getStaticPaths() {
       nome: 'Modernismo',
       nomeJp: '新感覚派',
       lettura: 'Modanizumu / Shinkankakuha',
-      periodo: 'Anni \'20 e \'30 · Era Taishō & Shōwa',
       descrizione: 'Città elettriche, treni notturni, cosmi interiori e frammentazione. Il mondo che accelera vertiginosamente e l\'essere umano alla ricerca di una nuova lingua poetica e sensoriale per raccontare la vertigine.',
       citazione: '«I fanali a gas della metropoli pulsavano come arterie esposte; la folla correva senza sapere se stesse inseguendo il futuro o fuggendo dal silenzio.»',
       citazioneAutore: 'Riichi Yokomitsu',
@@ -77,7 +73,6 @@ export async function getStaticPaths() {
       nome: 'Ero-Guro e Giallo',
       nomeJp: '怪奇・推理',
       lettura: 'Ero-Guro & Suiri',
-      periodo: 'Anni \'20 – \'50 · Primo Shōwa',
       descrizione: 'Desiderio morboso, bizzarrie, enigmi oscuri e il fascino dell\'irreparabile. L\'esplorazione del grottesco, del sensazionale, dell\'ingegno deduttivo e delle ombre più contorte dell\'animo umano.',
       citazione: '«Nel buio di una stanza sigillata, la mente umana partorisce labirinti da cui neppure il colpevole desidera più trovare un\'uscita.»',
       citazioneAutore: 'Edogawa Ranpo',
@@ -955,9 +950,9 @@ const storieOrdinate = [...storie].sort((a, b) => (a.data.yearOriginal || 0) - (
       <span class="stat-sub">作家</span>
     </div>
     <div class="stat-box">
-      <span class="stat-val">{categoria.periodo.split('·')[0]}</span>
-      <span class="stat-lbl">Epoca di Riferimento</span>
-      <span class="stat-sub">時代</span>
+      <span class="stat-val">{categoria.temiChiave.length}</span>
+      <span class="stat-lbl">Temi Esplorati</span>
+      <span class="stat-sub">主題</span>
     </div>
   </div>
 

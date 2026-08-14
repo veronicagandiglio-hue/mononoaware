@@ -12,7 +12,6 @@ description: "Analisi del capolavoro di Osamu Dazai: la storia di un'anima segna
 excerpt: "Un giovane tormentato dall'alienazione e dall'inadeguatezza ricorre alla buffoneria per nascondere il proprio terrore verso l'umanità e la società."
 heroImage: ""
 originalTitle: "人間失格"
-period: "Periodo Shōwa"
 readTime: 145
 oltreLeParole: |
   Se avete chiuso questo testo provando un’istintiva compassione per Yōzō, credendo di aver letto il ritratto sofferto di un giovane incompreso e incline all'autodistruzione, la trappola di Dazai Osamu si è chiusa perfettamente sopra di voi. *Lo squalificato* non è un semplice memoriale di vittimismo, né una banale cronaca dell'alcolismo. Sotto la patina della confessione autobiografica si cela un esperimento psicologico glaciale e spietato, capace di mettere a nudo il terrore viscerale che fonda l'atto stesso di diventare "umani" nella società moderna. Il disagio che serpeggia in ogni riga non nasce dalla debolezza del protagonista, ma dalla sua terribile lucidità: egli ha scorto il meccanismo segreto su cui si regge la convivenza civile e ne è rimasto pietrificato.
@@ -1164,7 +1163,7 @@ Vi fu persino una notte in cui bussai alla porta della farmacia a ora tarda. All
 
 La signora, senza dire una parola, mi consegnò un'intera scatola.
 
-Quando giunsi a comprendere con lucidità che quel farmaco era, al pari dello *shōchū*, anzi ancor più di quello, una cosa abominevole e lurida, ero oramai diventato un intossicato a tutti gli effetti. Un vero e proprio apice di vergogna. Pur di procurarmi la sostanza, ricominciai a copiare le stampe erotiche *shunga<span class="nota" data-nota="Stampe artistiche giapponesi di contenuto erotico prodotte principalmente nell&#x27;ambito del genere xilografico ukiyo-e durante il periodo Edo.">[28]</span>* e finii persino per intrecciare una relazione sordida, nel senso più letterale del termine, con la sciancata signora della farmacia.
+Quando giunsi a comprendere con lucidità che quel farmaco era, al pari dello *shōchū*, anzi ancor più di quello, una cosa abominevole e lurida, ero oramai diventato un intossicato a tutti gli effetti. Un vero e proprio apice di vergogna. Pur di procurarmi la sostanza, ricominciai a copiare le stampe erotiche *shunga<span class="nota" data-nota="Stampe artistiche giapponesi di contenuto erotico prodotte principalmente nell&#x27;ambito del genere xilografico ukiyo-e durante l&#x27;era Edo.">[28]</span>* e finii persino per intrecciare una relazione sordida, nel senso più letterale del termine, con la sciancata signora della farmacia.
 
 Voglio morire, voglio morire e basta, ormai non c'è più alcun rimedio, qualunque cosa io faccia, qualunque tentativo io compia, servirà soltanto a peggiorare le cose, ad accumulare vergogna su vergogna; una gita in bicicletta verso una cascata immersa nel verde dei fogliami è per me qualcosa di inconcepibile e irraggiungibile, le colpe abbiette si sommano soltanto alle colpe immonde, e la sofferenza cresce fino a farsi insopportabile. Voglio morire, devo morire, la mia stessa esistenza è la radice di ogni peccato... eppure, pur nell'ossessione di questi pensieri, non facevo altro che fare avanti e indietro tra il mio appartamento e la farmacia, come un invasato.
 

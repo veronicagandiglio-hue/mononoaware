@@ -382,10 +382,6 @@ kbd { font-family: 'JetBrains Mono', monospace; font-size: 10px; background: var
       <input type="text" id="f-country" value="Giappone">
     </div>
     <div class="field">
-      <label>Periodo storico</label>
-      <input type="text" id="f-period" placeholder="Periodo Meiji">
-    </div>
-    <div class="field">
       <label>Titolo originale in giapponese (facoltativo)</label>
       <input type="text" id="f-titleJp" placeholder="提灯の下に雨">
     </div>
@@ -626,7 +622,6 @@ const D = {
   fCategory:     $('f-category'),
   fYear:         $('f-year'),
   fCountry:      $('f-country'),
-  fPeriod:       $('f-period'),
   fTitleJp:      $('f-titleJp'),
   fTranslator:   $('f-translator'),
   btnTranslate:  $('btn-translate'),
@@ -773,7 +768,6 @@ function restoreDraft () {
       D.fCategory.value   = f.category   || D.fCategory.value;
       D.fYear.value       = f.year       || '';
       D.fCountry.value    = f.country    || 'Giappone';
-      D.fPeriod.value     = f.period     || '';
       D.fTitleJp.value    = f.titleJp    || '';
       D.fTranslator.value = f.translator || 'Gemini 3.1 Pro';
     }
@@ -874,7 +868,6 @@ function getFields () {
     category:   D.fCategory.value,
     year:       D.fYear.value.trim(),
     country:    D.fCountry.value.trim(),
-    period:     D.fPeriod.value.trim(),
     titleJp:    D.fTitleJp.value.trim(),
     translator: D.fTranslator.value.trim() || 'Gemini 3.1 Pro',
     origLang:   'Giapponese',
@@ -1236,7 +1229,6 @@ function generateMarkdown (fields, translatedText) {
     `description: "${desc}"`,
     `excerpt: "${desc}"`,
     fields.titleJp  ? `titleJp: "${fields.titleJp}"` : null,
-    fields.period   ? `period: "${fields.period}"`   : null,
     fields.readTime ? `readTime: ${fields.readTime}` : null,
     notes           ? `note: "${notes.substring(0,200).replace(/"/g,"'")}"` : null,
     '---',

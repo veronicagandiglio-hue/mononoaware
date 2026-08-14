@@ -561,11 +561,7 @@ h1, h2 { font-family: 'Playfair Display', serif; letter-spacing: -0.02em; }
       <input type="number" id="f-year" placeholder="1898" min="600" max="1970">
     </div>
 
-    <!-- Periodo & Traduttore -->
-    <div class="field">
-      <label>Periodo storico <span class="optional">· facoltativo · sostituisce l'anno nell'hero</span></label>
-      <input type="text" id="f-period" placeholder="Periodo Meiji">
-    </div>
+    <!-- Traduttore -->
     <div class="field">
       <label>Traduttore <span class="optional">· facoltativo</span></label>
       <input type="text" id="f-translator" placeholder="Gemini 3.1 Pro Preview" value="Gemini 3.1 Pro Preview">
@@ -1023,7 +1019,6 @@ function generateMarkdown () {
   const category    = val('f-category');
   const year        = val('f-year').trim();
   const country     = val('f-country', 'Giappone').trim() || 'Giappone';
-  const period      = val('f-period').trim();
   const titleJp     = val('f-titleJp').trim();
   const origTitle   = val('f-originalTitle').trim();
   const isDraft     = checked('f-isDraft', false);
@@ -1063,7 +1058,6 @@ function generateMarkdown () {
   fm.push(`heroImage: "${(heroImage || '').replace(/"/g, "'")}"`);
   if (titleJp) fm.push(`titleJp: "${titleJp}"`);
   if (origTitle) fm.push(`originalTitle: "${origTitle}"`);
-  if (period) fm.push(`period: "${period}"`);
   if (readTime) fm.push(`readTime: ${readTime}`);
   if (noteYml) fm.push(`note: "${noteYml.replace(/"/g, "'").replace(/\n/g, ' ')}"`);
 
@@ -1199,7 +1193,6 @@ function saveDraft () {
     category:    val('f-category'),
     year:        val('f-year'),
     country:     val('f-country', 'Giappone'),
-    period:      val('f-period'),
     translator:  val('f-translator', 'Gemini 3.1 Pro Preview'),
     isDraft:     checked('f-isDraft', false),
     description: val('f-description'),
@@ -1242,7 +1235,6 @@ function loadDraft () {
     if (d.category)    setVal('f-category', d.category);
     if (d.year)        setVal('f-year', d.year);
     if (d.country)     setVal('f-country', d.country);
-    if (d.period)      setVal('f-period', d.period);
     if (d.translator)  setVal('f-translator', d.translator);
     if (d.isDraft !== undefined) setChecked('f-isDraft', d.isDraft);
     if (d.description) setVal('f-description', d.description);
@@ -1291,7 +1283,6 @@ function clearAll () {
   setVal('f-category', '');
   setVal('f-year', '');
   setVal('f-country', 'Giappone');
-  setVal('f-period', '');
   setVal('f-translator', 'Gemini 3.1 Pro Preview');
   setChecked('f-isDraft', false);
   setVal('f-description', '');

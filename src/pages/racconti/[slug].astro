@@ -46,7 +46,7 @@ const r = {
   autoreDesc:     d.originalLanguage
     ? `Traduzione dal ${d.originalLanguage}`
     : 'Testo in traduzione',
-  periodo:         d.period ?? String(d.yearOriginal),
+  anno:            String(d.yearOriginal),
   paese:           d.country,
   categoria:       d.category,
   teaser:          d.excerpt ?? d.description,
@@ -989,7 +989,7 @@ html.night #reading-header { background: rgba(15,12,9,0.94); }
 <!-- Header lettura (compare dopo hero) -->
 <div id="reading-header">
   <span class="rh-title">{r.titolo}</span>
-  <span class="rh-chapter" id="rh-chapter">{r.autore} · {r.periodo}</span>
+  <span class="rh-chapter" id="rh-chapter">{r.autore} · {r.anno}</span>
   <span class="rh-pct" id="rh-pct">0%</span>
 </div>
 
@@ -1018,9 +1018,7 @@ html.night #reading-header { background: rgba(15,12,9,0.94); }
   <div class="hero-content">
     <div class="hero-pills">
       <span class="pill accent">{r.categoria}</span>
-      
-      <span class="pill">{r.periodo}</span>
-      
+      <span class="pill">{r.anno}</span>
     </div>
 
     <h1 class="hero-title">{r.titolo}</h1>

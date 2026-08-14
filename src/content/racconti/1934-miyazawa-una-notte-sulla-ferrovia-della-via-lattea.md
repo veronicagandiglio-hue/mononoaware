@@ -12,7 +12,6 @@ description: "Leggi l'inizio del capolavoro di Kenji Miyazawa: la storia di Giov
 excerpt: "Il giovane Giovanni affronta le fatiche del lavoro e l'emarginazione dei compagni, mentre la città si prepara alla suggestiva Festa delle Stelle."
 heroImage: ""
 originalTitle: "銀河鉄道の夜"
-period: "Periodo Shōwa"
 readTime: 79
 oltreLeParole: |
   Chi si accosta a questo racconto con lo sguardo occidentale rischia di cadere in un malinteso rassicurante: considerare *Una notte sulla ferrovia della Via Lattea* una fiaba cosmica, una visionaria favola per ragazzi che ha anticipato l'immaginario di Hayao Miyazaki. Ma la superficie poetica e le immagini scintillanti sono solo un'esca. Sotto l'incanto visivo si cela una liturgica discesa negli inferi, un'opera atrocemente cupa, concepita da un uomo devastato dal lutto e ossessionato dall'ascesi dell'auto-annientamento. Il treno su cui sale Giovanni non è un mezzo fantastico: è un carro funebre siderale, una nave dei morti che solca il *Sanzu-no-kawa* — il fiume che nella tradizione buddista giapponese separa il mondo dei vivi da quello dei morti — la cui proiezione celeste è, appunto, la Via Lattea. Campanella non sale sul treno per fare un viaggio con l'amico: quando il racconto comincia, Campanella è già annegato nel fiume del paese. L'intera traversata è la percezione allucinata e catatonica di Giovanni di fronte al cadavere dell'amico, o un'esperienza di pre-morte provocata dalla fame, dalla fatica estrema e dal trauma.
